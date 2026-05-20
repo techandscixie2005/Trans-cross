@@ -4,48 +4,54 @@
 
 ## Current Phase
 
-**Data investigation and preprocessing design** (COMPLETED)
+**Preprocessing pipeline implemented** (COMPLETED)
 
 ## Completed
 
+### Phase 1: Data Investigation
 - [x] Remote data inspection (SSH to bjhpc)
-- [x] IR file analysis (`IR_NIST.jsonl` — 20,096 records, dense spectra, variable x-grids)
-- [x] NMR file analysis (`NMR_exp2.jsonl` — 3,369,170 records, peak lists, no intensities)
-- [x] IR–NMR pairing analysis (4,567 overlapping SMILES; 36.7% of IR records paired)
-- [x] Preprocessing pipeline design (SMILES canonicalization, IR resampling, NMR binning)
-- [x] Example cases extracted (2 representative molecules with IR + NMR)
-- [x] Preview plots generated (IR and NMR for both cases)
-- [x] Investigation report written (`reports/data_investigation.md`)
-- [x] Project repository initialized with README, .gitignore, PROJECT_STATUS.md
+- [x] IR file analysis (20,096 records, dense spectra, variable x-grids)
+- [x] NMR file analysis (3,369,170 records, peak lists, no intensities)
+- [x] IR–NMR pairing analysis (4,567 overlapping SMILES)
+- [x] Investigation report (`reports/data_investigation.md`)
+- [x] Example cases extracted (2 representative molecules)
 
-## Files Extracted Locally
+### Phase 2: Preprocessing Code
+- [x] `configs/preprocessing.yaml` — grid parameters, split config
+- [x] `src/transcross/io.py` — JSONL streaming, YAML reader
+- [x] `src/transcross/smiles.py` — RDKit SMILES canonicalization + scaffolds
+- [x] `src/transcross/pairing.py` — IR/NMR catalog scanning + SMILES pairing
+- [x] `src/transcross/spectra.py` — IR resampling, NMR binning, normalization
+- [x] `src/transcross/splitting.py` — Scaffold/random train/valid/test split
+- [x] `src/transcross/dataset.py` — PyTorch Dataset for processed arrays
+- [x] `scripts/build_pairs.py` — CLI for IR–NMR pairing
+- [x] `scripts/preprocess_spectra.py` — CLI for spectrum resampling/binning
+- [x] `scripts/split_data.py` — CLI for data splitting
+- [x] `scripts/run_preprocessing.py` — Full pipeline orchestrator
+- [x] `scripts/inspect_processed.py` — Output inspection tool
+- [x] 30 unit tests, all passing (smiles, pairing, spectra)
+- [x] README.md and PROJECT_STATUS.md updated
+- [x] Code committed and pushed to GitHub
 
-- `examples/case_001/` — `CCCCC(CC)CI` (iodoalkane), paired IR + ¹H NMR
-- `examples/case_002/` — `O=Cc1c(F)c(F)c(F)c(F)c1F` (pentafluorobenzaldehyde), paired IR + ¹H/¹³C/¹⁹F NMR
+## Pending
 
-## Preprocessing Recommendation
+- [ ] Server smoke test (requires SSH to bjhpc)
+- [ ] Full preprocessing run on server
+- [ ] Model implementation (next phase)
 
-1. Canonicalize SMILES with RDKit for both IR and NMR
-2. Deduplicate IR: keep highest-resolution record per canonical SMILES
-3. Select best NMR: keep record with most peaks per (SMILES, nucleus)
-4. Pair on canonical SMILES (inner join)
-5. Resample IR to fixed 400–4000 cm⁻¹ grid at 2 cm⁻¹ spacing (1,801 points)
-6. Bin NMR peaks to fixed grids (1H: 0–15 ppm, 13C: 0–220 ppm)
-7. Scaffold-based train/valid/test split (70/15/15)
-8. Save as .npy arrays + pairs.csv + splits.json
+## Output Files
+
+All processed data is git-ignored and stored on the server:
+
+| File | Shape | Description |
+|------|-------|-------------|
+| `ir.npy` | (N, 1801) | Min-max normalized IR, 400–4000 cm⁻¹ at 2 cm⁻¹ |
+| `nmr_1h.npy` | (N, 1500) | Binary-binned 1H NMR, 0–15 ppm at 0.01 ppm |
+| `nmr_13c.npy` | (N, 2200) | Binary-binned 13C NMR, 0–220 ppm at 0.1 ppm |
 
 ## Next Implementation Step
 
-Write preprocessing scripts:
-- `scripts/build_pairs.py`
-- `scripts/preprocess_spectra.py`
-- `scripts/split_data.py`
-- `src/data/transcross_dataset.py`
-- `configs/preprocessing.yaml`
-
-## Known Issues
-
-- Only ~4,567 molecules can be paired (33% of IR)
-- NMR lacks intensity values (peak positions only)
-- IR has 3,003 unique x-grid lengths (resampling required)
-- Non-canonical SMILES in raw data (RDKit canonicalization needed)
+After preprocessing validation on server:
+1. Design the 2x2 ablation experiment matrix
+2. Implement the two encoder variants (direct concat + cross-modal attention)
+3. Set up the TranSpec experiment structure

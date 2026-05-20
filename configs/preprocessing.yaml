@@ -1,0 +1,48 @@
+# Trans-cross Preprocessing Configuration
+# IR + NMR multimodal spectra preprocessing pipeline
+
+# Raw data paths
+raw:
+  ir_filename: "IR_NIST.jsonl"
+  nmr_filename: "NMR_exp2.jsonl"
+  # Default raw data directory (override with --raw-dir CLI arg)
+  raw_dir: "/data/home/sczc698/run/xxy/Trans-cross"
+
+# Processed output directory (override with --out-dir CLI arg)
+# output_dir: "data/processed"
+
+# IR resampling grid
+ir:
+  min_cm: 400.0
+  max_cm: 4000.0
+  step_cm: 2.0
+  # Normalization: "minmax" or "none"
+  normalization: "minmax"
+
+# NMR binning grids
+nmr:
+  mode: "binary"  # "binary" or "gaussian"
+  1H:
+    min_ppm: 0.0
+    max_ppm: 15.0
+    step_ppm: 0.01
+    sigma: 0.03  # gaussian sigma in ppm (only used in gaussian mode)
+  13C:
+    min_ppm: 0.0
+    max_ppm: 220.0
+    step_ppm: 0.1
+    sigma: 0.5  # gaussian sigma in ppm (only used in gaussian mode)
+
+# Train/valid/test split
+split:
+  train: 0.70
+  valid: 0.15
+  test: 0.15
+  method: "scaffold"  # "scaffold" or "random"
+  seed: 42
+
+# Processing limits (for smoke tests)
+limits:
+  limit_ir: null       # null = no limit
+  limit_nmr: null      # null = no limit
+  limit_preprocess: null  # null = no limit

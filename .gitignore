@@ -1,6 +1,8 @@
 # Raw and processed data (not committed)
 data/raw/
 data/processed/
+data/processed_smoke/
+paired_records.jsonl
 
 # Model artifacts
 checkpoints/
