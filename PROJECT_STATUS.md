@@ -4,91 +4,49 @@
 
 ## Current Phase
 
-**Preprocessing pipeline implemented and validated** (COMPLETED)
+**Fingerprint ablation v1 complete** — encoder comparison done.
 
 ## Completed
 
 ### Phase 1: Data Investigation
-- [x] Remote data inspection (SSH to bjhpc)
-- [x] IR file analysis (20,096 records, dense spectra, variable x-grids)
-- [x] NMR file analysis (3,369,170 records, peak lists, no intensities)
-- [x] IR–NMR pairing analysis (4,567 overlapping SMILES)
-- [x] Investigation report (`reports/data_investigation.md`)
-- [x] Example cases extracted (2 representative molecules)
+- [x] Remote data inspection
+- [x] IR/NMR file analysis
+- [x] Pairing analysis (4,567 overlapping SMILES)
+- [x] Investigation report
+- [x] Example cases extracted
 
-### Phase 2: Preprocessing Code
-- [x] `configs/preprocessing.yaml` — grid parameters, split config
-- [x] `src/transcross/io.py` — JSONL streaming, YAML reader
-- [x] `src/transcross/smiles.py` — RDKit SMILES canonicalization + scaffolds
-- [x] `src/transcross/pairing.py` — IR/NMR catalog scanning + SMILES pairing
-- [x] `src/transcross/spectra.py` — IR resampling, NMR binning, normalization
-- [x] `src/transcross/splitting.py` — Scaffold/random train/valid/test split
-- [x] `src/transcross/dataset.py` — PyTorch Dataset for processed arrays
-- [x] `scripts/build_pairs.py` — CLI for IR–NMR pairing
-- [x] `scripts/preprocess_spectra.py` — CLI for spectrum resampling/binning
-- [x] `scripts/split_data.py` — CLI for data splitting
-- [x] `scripts/run_preprocessing.py` — Full pipeline orchestrator
-- [x] `scripts/inspect_processed.py` — Output inspection tool
-- [x] 30 unit tests, all passing (smiles, pairing, spectra)
-- [x] Python 3.9 compatibility fixes
-- [x] README.md and PROJECT_STATUS.md updated
+### Phase 2: Preprocessing Pipeline
+- [x] Full preprocessing code (pairing, resampling, binning, splitting)
+- [x] Server smoke test passed
+- [x] Full preprocessing: **4,563 paired molecules**
+- [x] IR (4563, 1801), NMR 1H (4563, 1501), NMR 13C (4563, 2201)
+- [x] Scaffold split: train=3,195, valid=684, test=684
+
+### Phase 3: Fingerprint Ablation v1
+- [x] Processed data audit
+- [x] Morgan fingerprint generation (2048 bits, 0 invalid)
+- [x] ConcatEncoder: 992,896 params, test_tanimoto=0.0916
+- [x] IntraCrossEncoder: 1,786,624 params, test_tanimoto=0.0916
+- [x] Ablation report (`reports/fingerprint_ablation_v1.md`)
 - [x] Code committed and pushed to GitHub
 
-### Phase 3: Server Validation
-- [x] Code transferred to server: `/data/home/sczc698/run/xxy/Trans-cross/code/`
-- [x] Environment: Python 3.9, RDKit, numpy, pandas, yaml, PyTorch all available
-- [x] Tests: 30/30 passed on server
-- [x] Smoke test passed: 13 paired molecules, clean arrays
-- [x] Full preprocessing completed: **4,563 paired molecules**
-- [x] Processed output saved: `/data/home/sczc698/run/xxy/Trans-cross/data/processed/`
+## Key Finding
 
-## Full Preprocessing Results
+For Morgan fingerprint prediction from IR + NMR spectra, the simpler **concat encoder** achieves the same performance as the **intra-cross encoder** while using 1.8× fewer parameters. Modality-specific attention provides no benefit for this task with binary NMR representation.
 
-| Metric | Value |
-|--------|-------|
-| Paired molecules | 4,563 |
-| With 1H NMR | 4,473 (98.0%) |
-| With 13C NMR | 3,955 (86.7%) |
-| With both 1H and 13C | 3,865 (84.7%) |
-| Train samples | 3,195 (70.0%) |
-| Valid samples | 684 (15.0%) |
-| Test samples | 684 (15.0%) |
-| IR shape | (4563, 1801) |
-| NMR 1H shape | (4563, 1501) |
-| NMR 13C shape | (4563, 2201) |
-| NaN/Inf count | 0 across all arrays |
+## Next Steps
 
-## Output Files on Server
+1. Improve NMR representation: try Gaussian peak smearing instead of binary binning
+2. Run multi-seed experiments to confirm statistical significance
+3. Train on GPU for larger models and more epochs
+4. Consider pretraining or auxiliary tasks before SMILES generation
 
-```
-/data/home/sczc698/run/xxy/Trans-cross/
-  IR_NIST.jsonl              # Raw IR (untouched)
-  NMR_exp2.jsonl             # Raw NMR (untouched)
-  code/                      # Pipeline code (from GitHub)
-    configs/
-    scripts/
-    src/
-    tests/
-  data/
-    processed/               # Full preprocessing output
-      ir.npy                 # (4563, 1801)
-      ir_x.npy               # (1801,)
-      nmr_1h.npy             # (4563, 1501)
-      nmr_1h_x.npy           # (1501,)
-      nmr_13c.npy            # (4563, 2201)
-      nmr_13c_x.npy          # (2201,)
-      canonical_smiles.txt   # 4563 SMILES
-      pairs.csv
-      splits.json            # train/valid/test indices
-      preprocess_summary.json
-      split_summary.json
-    processed_smoke/         # Smoke test output (13 samples)
-```
+## Server Paths
 
-## Next Implementation Step
-
-Design and implement the two encoder variants for the attention ablation:
-1. Direct concatenation attention over IR + NMR tokens
-2. Intra-modal attention followed by cross-modal attention
-
-Use `/transpec-ablation-project` to scaffold the experiment structure.
+| Item | Path |
+|------|------|
+| Code | `/data/home/sczc698/run/xxy/Trans-cross/code/` |
+| Processed data | `/data/home/sczc698/run/xxy/Trans-cross/data/processed/` |
+| Concat run | `/data/home/sczc698/run/xxy/Trans-cross/runs/fp_concat_seed42/` |
+| Intra-Cross run | `/data/home/sczc698/run/xxy/Trans-cross/runs/fp_intra_cross_seed42/` |
+| Raw data | `/data/home/sczc698/run/xxy/Trans-cross/IR_NIST.jsonl`, `NMR_exp2.jsonl` |
