@@ -3,6 +3,7 @@
 import json
 import warnings
 from collections import defaultdict
+from typing import List, Dict, Tuple
 
 try:
     from rdkit import Chem
@@ -23,12 +24,12 @@ def _get_scaffold_safe(smiles: str) -> str:
 
 
 def scaffold_split(
-    smiles_list: list[str],
+    smiles_list: List[str],
     train_ratio: float = 0.70,
     valid_ratio: float = 0.15,
     test_ratio: float = 0.15,
     seed: int = 42,
-) -> dict[str, list[int]]:
+) -> Dict[str, List[int]]:
     """Split molecules by Bemis-Murcko scaffold.
 
     Scaffolds are sorted by frequency (largest first) and assigned to
@@ -73,12 +74,12 @@ def scaffold_split(
 
 
 def random_split(
-    smiles_list: list[str],
+    smiles_list: List[str],
     train_ratio: float = 0.70,
     valid_ratio: float = 0.15,
     test_ratio: float = 0.15,
     seed: int = 42,
-) -> dict[str, list[int]]:
+) -> Dict[str, List[int]]:
     """Randomly split molecule indices into train/valid/test."""
     import random
 
@@ -98,13 +99,13 @@ def random_split(
 
 
 def create_split(
-    smiles_list: list[str],
+    smiles_list: List[str],
     method: str = "scaffold",
     train_ratio: float = 0.70,
     valid_ratio: float = 0.15,
     test_ratio: float = 0.15,
     seed: int = 42,
-) -> tuple[dict[str, list[int]], dict]:
+) -> Tuple[Dict[str, List[int]], Dict]:
     """Create a train/valid/test split.
 
     Returns (splits_dict, summary_dict).

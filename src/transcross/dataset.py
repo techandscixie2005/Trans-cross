@@ -1,6 +1,7 @@
 """PyTorch Dataset for paired IR + NMR multimodal spectra."""
 
 import json
+from typing import Optional
 
 import numpy as np
 
@@ -14,7 +15,7 @@ class TranscrossDataset:
     def __init__(
         self,
         processed_dir: str,
-        split: str | None = None,
+        split: Optional[str] = None,
     ):
         """
         Args:

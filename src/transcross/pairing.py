@@ -2,14 +2,15 @@
 
 import json
 from collections import defaultdict
+from typing import Optional
 
 from .smiles import canonicalize_smiles
 from .io import iter_jsonl, safe_get_spectrum, safe_get_smiles
 
 
 def scan_ir_records(
-    ir_path: str, limit: int | None = None
-) -> dict[str, dict]:
+    ir_path: str, limit: Optional[int] = None
+) -> dict:
     """Stream IR JSONL and build a canonical-SMILES-indexed catalog.
 
     For each canonical SMILES, keeps the record with the largest
@@ -79,9 +80,9 @@ def scan_ir_records(
 
 def scan_nmr_records(
     nmr_path: str,
-    allowed_smiles: set[str] | None = None,
-    limit: int | None = None,
-) -> dict[tuple[str, str], dict]:
+    allowed_smiles: Optional[set] = None,
+    limit: Optional[int] = None,
+) -> dict:
     """Stream NMR JSONL and build a (canonical SMILES, nucleus)-indexed catalog.
 
     For each (canonical SMILES, nucleus), keeps the record with the most peaks.
@@ -168,9 +169,9 @@ def scan_nmr_records(
 
 
 def build_pairs(
-    ir_catalog: dict[str, dict],
-    nmr_catalog: dict[tuple[str, str], dict],
-) -> list[dict]:
+    ir_catalog: dict,
+    nmr_catalog: dict,
+) -> list:
     """Inner join IR and NMR catalogs on canonical SMILES.
 
     Returns a list of paired sample dicts, one per molecule.

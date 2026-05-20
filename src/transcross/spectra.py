@@ -1,5 +1,7 @@
 """IR resampling and NMR binning utilities."""
 
+from typing import Optional
+
 import numpy as np
 
 
@@ -82,7 +84,7 @@ def bin_nmr_peaks(
     peaks: list[float],
     grid: np.ndarray,
     mode: str = "binary",
-    sigma: float | None = None,
+    sigma: Optional[float] = None,
 ) -> np.ndarray:
     """Bin NMR peak positions into a fixed chemical shift grid.
 

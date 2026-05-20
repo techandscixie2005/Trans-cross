@@ -1,5 +1,7 @@
 """SMILES canonicalization and scaffold extraction using RDKit."""
 
+from typing import Optional
+
 try:
     from rdkit import Chem
     from rdkit.Chem.Scaffolds import MurckoScaffold
@@ -17,7 +19,7 @@ def _require_rdkit():
         )
 
 
-def canonicalize_smiles(smiles: str) -> str | None:
+def canonicalize_smiles(smiles: str) -> Optional[str]:
     """Canonicalize a SMILES string using RDKit.
 
     Returns None if the SMILES is invalid or cannot be parsed.

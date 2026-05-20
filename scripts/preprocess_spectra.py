@@ -13,6 +13,7 @@ import argparse
 import json
 import os
 import sys
+from typing import Optional
 
 import numpy as np
 
@@ -28,7 +29,7 @@ from src.transcross.spectra import (
 )
 
 
-def load_paired_records(path: str, limit: int | None = None):
+def load_paired_records(path: str, limit: Optional[int] = None):
     """Load paired_records.jsonl as list of dicts."""
     records = []
     with open(path, "r") as f:

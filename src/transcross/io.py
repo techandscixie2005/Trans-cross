@@ -1,6 +1,8 @@
 """Safe I/O for JSONL streaming and config loading."""
 
 import json
+from typing import Optional, Union
+
 import yaml
 
 
@@ -17,7 +19,7 @@ def iter_jsonl(path: str):
             yield json.loads(line)
 
 
-def safe_get_spectrum(record: dict) -> dict | None:
+def safe_get_spectrum(record: dict) -> Optional[dict]:
     """Extract x, y arrays from an IR or NMR record.
 
     Returns dict with 'x' and 'y' keys, or None if spectrum is missing.
@@ -32,7 +34,7 @@ def safe_get_spectrum(record: dict) -> dict | None:
     return {"x": x, "y": y}
 
 
-def safe_get_smiles(record: dict) -> str | None:
+def safe_get_smiles(record: dict) -> Optional[str]:
     """Extract SMILES string from a record."""
     return record.get("smiles")
 
@@ -43,13 +45,13 @@ def read_yaml(path: str) -> dict:
         return yaml.safe_load(f)
 
 
-def write_json(path: str, obj: dict | list):
+def write_json(path: str, obj: Union[dict, list]):
     """Write an object as JSON file."""
     with open(path, "w") as f:
         json.dump(obj, f, indent=2)
 
 
-def write_jsonl(path: str, records: list[dict]):
+def write_jsonl(path: str, records: list):
     """Write a list of records as JSONL file."""
     with open(path, "w") as f:
         for rec in records:
