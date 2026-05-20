@@ -1,0 +1,63 @@
+{
+  "source_filenames": [
+    "IR_NIST.jsonl",
+    "NMR_exp2.jsonl"
+  ],
+  "ir_record_index": 15456,
+  "nmr_record_indices": [
+    569241,
+    569242,
+    569243,
+    2357188,
+    2357189
+  ],
+  "pairing_key": "SMILES",
+  "smiles": "O=Cc1c(F)c(F)c(F)c(F)c1F",
+  "molecule_name": null,
+  "molecule_formula": null,
+  "notes": "IR has 1780 x-y points. NMR has 5 records across multiple nucleus types.",
+  "ir_metadata": {
+    "temperature": "NONE",
+    "pressure": "NONE",
+    "condition": "gas",
+    "type": "IR",
+    "source": "NIST"
+  },
+  "nmr_summary": {
+    "record_569241": {
+      "nucleus": "1H",
+      "frequency": 300.0,
+      "solvent": "CDCl3",
+      "num_peaks": 1,
+      "source": "NONE"
+    },
+    "record_569242": {
+      "nucleus": "13C",
+      "frequency": 75.0,
+      "solvent": "CDCl3",
+      "num_peaks": 19,
+      "source": "NONE"
+    },
+    "record_569243": {
+      "nucleus": "19F",
+      "frequency": 282.0,
+      "solvent": "CDCl3",
+      "num_peaks": 2,
+      "source": "NONE"
+    },
+    "record_2357188": {
+      "nucleus": "1H",
+      "frequency": 400.0,
+      "solvent": "CDCl3",
+      "num_peaks": 1,
+      "source": "NONE"
+    },
+    "record_2357189": {
+      "nucleus": "13C",
+      "frequency": 101.0,
+      "solvent": "CDCl3",
+      "num_peaks": 5,
+      "source": "NONE"
+    }
+  }
+}

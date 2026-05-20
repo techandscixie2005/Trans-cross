@@ -1,0 +1,31 @@
+{
+  "source_filenames": [
+    "IR_NIST.jsonl",
+    "NMR_exp2.jsonl"
+  ],
+  "ir_record_index": 5659,
+  "nmr_record_indices": [
+    1621158
+  ],
+  "pairing_key": "SMILES",
+  "smiles": "CCCCC(CC)CI",
+  "molecule_name": null,
+  "molecule_formula": null,
+  "notes": "IR has 870 x-y points. NMR has 1 records across multiple nucleus types.",
+  "ir_metadata": {
+    "temperature": "NONE",
+    "pressure": "NONE",
+    "condition": "gas",
+    "type": "IR",
+    "source": "NIST"
+  },
+  "nmr_summary": {
+    "record_1621158": {
+      "nucleus": "1H",
+      "frequency": 300.0,
+      "solvent": "CDCl3",
+      "num_peaks": 4,
+      "source": "NONE"
+    }
+  }
+}

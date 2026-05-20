@@ -1,0 +1,45 @@
+# Raw and processed data (not committed)
+data/raw/
+data/processed/
+
+# Model artifacts
+checkpoints/
+outputs/
+logs/
+wandb/
+tensorboard/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Model weights
+*.pt
+*.pth
+*.ckpt
+
+# Large binary data
+*.npy
+*.npz
+*.pkl
+*.h5
+*.hdf5
+
+# Environment
+.env
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OMC internal state
+.omc/
+
+# OS
+.DS_Store
+Thumbs.db
