@@ -3,7 +3,6 @@
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
-#SBATCH --mem=32G
 #SBATCH --time=12:00:00
 #SBATCH --output=/data/home/sczc698/run/xxy/Trans-cross/runs/slurm_logs/spe_e1_intra_cross_%j.out
 #SBATCH --error=/data/home/sczc698/run/xxy/Trans-cross/runs/slurm_logs/spe_e1_intra_cross_%j.err
