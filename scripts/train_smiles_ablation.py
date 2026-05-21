@@ -1,26 +1,19 @@
-"""Train SMILES generation ablation models (concat vs intra_cross).
+"""Train SMILES generation ablation models.
 
-Usage (config mode, preferred):
+Supports both regex_atom and SPE tokenizers.
+Both config-driven and legacy CLI modes.
+
+Usage (config mode, SPE):
+  python scripts/train_smiles_ablation.py \
+    --config configs/smiles_spe_equal_param.yaml \
+    --model concat_equal \
+    --out-dir /path/to/run
+
+Usage (config mode, regex_atom):
   python scripts/train_smiles_ablation.py \
     --config configs/smiles_equal_param.yaml \
     --model concat_equal \
     --out-dir /path/to/run
-
-Usage (legacy CLI mode):
-  python scripts/train_smiles_ablation.py \
-    --processed-dir /data/home/sczc698/run/xxy/Trans-cross/data/processed \
-    --model concat \
-    --epochs 30 \
-    --batch-size 32 \
-    --d-model 128 \
-    --encoder-layers 2 \
-    --decoder-layers 2 \
-    --num-heads 4 \
-    --patch-size 64 \
-    --lr 1e-4 \
-    --seed 42 \
-    --max-smiles-len 160 \
-    --out-dir /data/home/sczc698/run/xxy/Trans-cross/runs/smiles_concat_seed42
 """
 
 import argparse
@@ -30,7 +23,7 @@ import sys
 import csv
 import time
 import yaml
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 import torch
 import torch.nn as nn
@@ -42,12 +35,12 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.transcross.dataset import TransCrossSmilesDataset
 from src.transcross.collate import smiles_collate_fn
 from src.transcross.smiles_tokenizer import SmilesTokenizer
-from src.transcross.models.smiles_concat import DirectConcatSmilesModel
-from src.transcross.models.smiles_intra_cross import IntraCrossSmilesModel
+from src.transcross.tokenization.spe_tokenizer import SPETokenizer
 from src.transcross.models.factory import build_smiles_model
 from src.transcross.model_utils import (
     count_trainable_parameters,
     format_parameter_table,
+    count_parameters_by_module,
 )
 from src.transcross.generation import greedy_decode
 
@@ -72,7 +65,6 @@ def get_device() -> torch.device:
 
 def compute_loss_and_acc(logits, target_ids, pad_id):
     """Compute cross-entropy loss and token accuracy (excluding pad)."""
-    # logits: (B, T, V), target_ids: (B, T)
     B, T, V = logits.shape
     logits = logits.reshape(B * T, V)
     targets = target_ids.reshape(B * T)
@@ -170,15 +162,44 @@ def load_config(config_path: str) -> dict:
         return yaml.safe_load(f)
 
 
+def load_tokenizer(config: dict, processed_dir: str):
+    """Load the appropriate tokenizer based on config."""
+    tok_cfg = config.get("tokenizer", {})
+    tok_type = tok_cfg.get("type", "regex_atom")
+
+    if tok_type == "spe":
+        vocab_path = tok_cfg.get("vocab_path")
+        if not vocab_path:
+            vocab_path = os.path.join(processed_dir, "spe_vocab_256.json")
+        if not os.path.exists(vocab_path):
+            raise FileNotFoundError(
+                f"SPE vocab not found at {vocab_path}. "
+                f"Run scripts/build_spe_vocab.py first."
+            )
+        tokenizer = SPETokenizer.load(vocab_path)
+        print(f"Loaded SPE tokenizer from {vocab_path}")
+    else:
+        vocab_path = os.path.join(processed_dir, "smiles_vocab.json")
+        if os.path.exists(vocab_path):
+            tokenizer = SmilesTokenizer.load(vocab_path)
+        else:
+            smiles_path = os.path.join(processed_dir, "canonical_smiles.txt")
+            with open(smiles_path) as f:
+                smiles_list = [l.strip() for l in f if l.strip()]
+            tokenizer = SmilesTokenizer.build_from_smiles(smiles_list)
+            tokenizer.save(vocab_path)
+        print(f"Loaded regex_atom tokenizer, vocab_size={tokenizer.vocab_size}")
+
+    return tokenizer, tok_type
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Train SMILES generation ablation model."
     )
-    # Config mode (preferred)
     parser.add_argument("--config", default=None, help="Path to YAML config file")
     parser.add_argument("--model", default="concat",
                        choices=["concat", "intra_cross", "concat_equal", "intra_cross_equal"])
-    # Legacy CLI args (used when --config not provided, or override config values)
     parser.add_argument("--processed-dir", default=None)
     parser.add_argument("--epochs", type=int, default=None)
     parser.add_argument("--batch-size", type=int, default=None)
@@ -194,14 +215,12 @@ def main():
     parser.add_argument("--mixed-precision", action="store_true", default=False)
     args = parser.parse_args()
 
-    # Load config if provided
+    # Load config
     config = None
     if args.config:
         config = load_config(args.config)
         print(f"Loaded config from {args.config}")
-        print(json.dumps(config, indent=2))
 
-    # Resolve parameters: CLI overrides > config > defaults
     train_cfg = config.get("training", {}) if config else {}
     shared_cfg = config.get("shared", {}) if config else {}
     data_cfg = config.get("data", {}) if config else {}
@@ -217,6 +236,7 @@ def main():
     seed = args.seed if args.seed is not None else train_cfg.get("seed", 42)
     max_smiles_len = args.max_smiles_len if args.max_smiles_len is not None else data_cfg.get("max_smiles_len", 160)
     patch_size = args.patch_size if args.patch_size is not None else tok_cfg.get("patch_size", 64)
+    tok_type = tok_cfg.get("type", "regex_atom")
 
     set_seed(seed)
     device = get_device()
@@ -224,32 +244,27 @@ def main():
     os.makedirs(args.out_dir, exist_ok=True)
 
     # Load tokenizer
-    vocab_path = os.path.join(processed_dir, "smiles_vocab.json")
-    if not os.path.exists(vocab_path):
-        print("Building SMILES vocabulary...")
-        smiles_path = os.path.join(processed_dir, "canonical_smiles.txt")
-        with open(smiles_path) as f:
-            smiles_list = [l.strip() for l in f if l.strip()]
-        tokenizer = SmilesTokenizer.build_from_smiles(smiles_list)
-        tokenizer.save(vocab_path)
-    else:
-        tokenizer = SmilesTokenizer.load(vocab_path)
-
+    tokenizer, _ = load_tokenizer(config or {}, processed_dir)
     pad_id = tokenizer.pad_id
-    print(f"Vocab size: {tokenizer.vocab_size}, pad_id: {pad_id}")
+    vocab_size = tokenizer.vocab_size
+    print(f"Tokenizer type: {tok_type}, vocab_size: {vocab_size}, pad_id: {pad_id}")
 
     # Datasets
+    spe_vocab_path = tok_cfg.get("vocab_path") if tok_type == "spe" else None
     train_ds = TransCrossSmilesDataset(
         processed_dir, split="train",
         max_smiles_len=max_smiles_len, tokenizer=tokenizer,
+        tokenizer_type=tok_type, spe_vocab_path=spe_vocab_path,
     )
     valid_ds = TransCrossSmilesDataset(
         processed_dir, split="valid",
         max_smiles_len=max_smiles_len, tokenizer=tokenizer,
+        tokenizer_type=tok_type, spe_vocab_path=spe_vocab_path,
     )
     test_ds = TransCrossSmilesDataset(
         processed_dir, split="test",
         max_smiles_len=max_smiles_len, tokenizer=tokenizer,
+        tokenizer_type=tok_type, spe_vocab_path=spe_vocab_path,
     )
 
     print(f"Train: {len(train_ds)}, Valid: {len(valid_ds)}, Test: {len(test_ds)}")
@@ -272,28 +287,28 @@ def main():
 
     # Create model
     if config and args.model in ("concat_equal", "intra_cross_equal"):
-        # Use factory for equal-param models
-        model = build_smiles_model(args.model, config, tokenizer.vocab_size, pad_id)
-        if args.model == "concat_equal":
-            model_name = "DirectConcatSmilesModel-equal"
-        else:
-            model_name = "IntraCrossSmilesModel-equal"
+        model = build_smiles_model(args.model, config, vocab_size, pad_id)
+        model_name = (
+            "DirectConcatSmilesModel-SPE" if args.model == "concat_equal"
+            else "IntraCrossSmilesModel-SPE"
+        )
     else:
-        # Legacy model creation
         d_model = args.d_model or shared_cfg.get("d_model", 128)
         encoder_layers = args.encoder_layers or (
             config.get("e0_concat", {}).get("encoder_layers", 2) if config else 2
         )
         decoder_layers = args.decoder_layers or shared_cfg.get("decoder_layers", 2)
         num_heads = args.num_heads or shared_cfg.get("num_heads", 4)
+        decoder_ffn_dim = shared_cfg.get("decoder_ffn_dim", 512)
 
         model_kwargs = dict(
-            vocab_size=tokenizer.vocab_size,
+            vocab_size=vocab_size,
             ir_len=1801, h1_len=1501, c13_len=2201,
             patch_size=patch_size,
             d_model=d_model,
             encoder_layers=encoder_layers,
             decoder_layers=decoder_layers,
+            decoder_ffn_dim=decoder_ffn_dim,
             num_heads=num_heads,
             dropout=0.1,
             pad_id=pad_id,
@@ -301,9 +316,11 @@ def main():
         )
 
         if args.model in ("concat", "concat_equal"):
+            from src.transcross.models.smiles_concat import DirectConcatSmilesModel
             model = DirectConcatSmilesModel(**model_kwargs)
             model_name = "DirectConcatSmilesModel"
         else:
+            from src.transcross.models.smiles_intra_cross import IntraCrossSmilesModel
             model = IntraCrossSmilesModel(**model_kwargs)
             model_name = "IntraCrossSmilesModel"
 
@@ -313,11 +330,12 @@ def main():
     print(f"Parameters: {n_params:,}")
     print(format_parameter_table(model))
 
-    # Save full config snapshot
+    # Save config snapshot
     run_config = {
         "model": args.model,
         "model_name": model_name,
-        "vocab_size": tokenizer.vocab_size,
+        "tokenizer_type": tok_type,
+        "vocab_size": vocab_size,
         "n_params": n_params,
         "processed_dir": processed_dir,
         "lr": lr,
@@ -326,11 +344,13 @@ def main():
         "epochs": epochs,
         "max_smiles_len": max_smiles_len,
         "patch_size": patch_size,
+        "d_model": shared_cfg.get("d_model", 128),
+        "num_heads": shared_cfg.get("num_heads", 4),
+        "decoder_layers": shared_cfg.get("decoder_layers", 2),
         "train_samples": len(train_ds),
         "valid_samples": len(valid_ds),
         "test_samples": len(test_ds),
     }
-    # Merge config into run_config for traceability
     if config:
         run_config["config_file"] = args.config
         run_config["config_content"] = config
@@ -338,10 +358,11 @@ def main():
     with open(os.path.join(args.out_dir, "config_used.json"), "w") as f:
         json.dump(run_config, f, indent=2)
 
-    # Save parameter count separately
-    from src.transcross.model_utils import count_parameters_by_module
+    # Save parameter count
     param_count = {
         "model_name": model_name,
+        "tokenizer_type": tok_type,
+        "vocab_size": vocab_size,
         "total_params": n_params,
         "by_module": count_parameters_by_module(model),
     }
@@ -412,7 +433,7 @@ def main():
             writer.writeheader()
             writer.writerows(history)
 
-    # Load best model and evaluate on test set
+    # Load best model and evaluate on test
     best_ckpt = torch.load(os.path.join(args.out_dir, "best_model.pt"),
                            map_location=device, weights_only=False)
     model.load_state_dict(best_ckpt["model_state_dict"])
@@ -429,6 +450,8 @@ def main():
         "test_token_acc": round(test_acc, 4),
         "test_exact_match": round(test_exact, 4),
         "n_params": n_params,
+        "tokenizer_type": tok_type,
+        "vocab_size": vocab_size,
     }
     with open(os.path.join(args.out_dir, "metrics.json"), "w") as f:
         json.dump(metrics, f, indent=2)

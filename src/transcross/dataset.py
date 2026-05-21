@@ -1,12 +1,13 @@
-"""PyTorch Dataset for paired IR + NMR multimodal spectra and fingerprints."""
+"""PyTorch Dataset for paired IR + NMR multimodal spectra and SMILES generation."""
 
 import json
 import os
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 
 from .smiles_tokenizer import SmilesTokenizer
+from .tokenization.spe_tokenizer import SPETokenizer
 
 
 class TranscrossDataset:
@@ -20,12 +21,6 @@ class TranscrossDataset:
         processed_dir: str,
         split: Optional[str] = None,
     ):
-        """
-        Args:
-            processed_dir: Path to directory containing ir.npy, nmr_1h.npy,
-                nmr_13c.npy, canonical_smiles.txt, splits.json.
-            split: One of "train", "valid", "test", or None for all samples.
-        """
         self.processed_dir = processed_dir
         self.split = split
 
@@ -33,7 +28,6 @@ class TranscrossDataset:
         self.nmr_1h = np.load(os.path.join(processed_dir, "nmr_1h.npy"))
         self.nmr_13c = np.load(os.path.join(processed_dir, "nmr_13c.npy"))
 
-        # Optional fingerprints
         fp_path = os.path.join(processed_dir, "morgan_fp_2048.npy")
         if os.path.exists(fp_path):
             self.fp = np.load(fp_path)
@@ -91,8 +85,12 @@ class TranscrossDataset:
 class TransCrossSmilesDataset:
     """Dataset for SMILES generation from IR + NMR spectra.
 
-    Loads preprocessed spectra, SMILES, splits, and vocabulary.
-    Returns tokenized SMILES for teacher forcing.
+    Supports two tokenizer types:
+    - regex_atom: Original regex-based SmilesTokenizer
+    - spe: SMILES Pair Encoding tokenizer
+
+    Loads preprocessed spectra, SMILES, splits, and tokenizes SMILES
+    for teacher forcing.
     """
 
     def __init__(
@@ -100,11 +98,14 @@ class TransCrossSmilesDataset:
         processed_dir: str,
         split: Optional[str] = None,
         max_smiles_len: int = 160,
-        tokenizer: Optional[SmilesTokenizer] = None,
+        tokenizer: Optional[Union[SmilesTokenizer, SPETokenizer]] = None,
+        tokenizer_type: str = "regex_atom",
+        spe_vocab_path: Optional[str] = None,
     ):
         self.processed_dir = processed_dir
         self.split = split
         self.max_smiles_len = max_smiles_len
+        self.tokenizer_type = tokenizer_type
 
         self.ir = np.load(os.path.join(processed_dir, "ir.npy"))
         self.nmr_1h = np.load(os.path.join(processed_dir, "nmr_1h.npy"))
@@ -121,13 +122,25 @@ class TransCrossSmilesDataset:
         # Load or build tokenizer
         if tokenizer is not None:
             self.tokenizer = tokenizer
+        elif tokenizer_type == "spe":
+            if spe_vocab_path and os.path.exists(spe_vocab_path):
+                self.tokenizer = SPETokenizer.load(spe_vocab_path)
+            else:
+                vocab_path = os.path.join(processed_dir, "spe_vocab_256.json")
+                if os.path.exists(vocab_path):
+                    self.tokenizer = SPETokenizer.load(vocab_path)
+                else:
+                    raise FileNotFoundError(
+                        f"SPE vocab not found at {spe_vocab_path or vocab_path}. "
+                        f"Run scripts/build_spe_vocab.py first."
+                    )
         else:
+            # regex_atom (default / backward compatible)
             vocab_path = os.path.join(processed_dir, "smiles_vocab.json")
             if os.path.exists(vocab_path):
                 self.tokenizer = SmilesTokenizer.load(vocab_path)
             else:
                 self.tokenizer = SmilesTokenizer.build_from_smiles(self.smiles)
-                # Don't save here — caller should have saved it
 
         self.indices = list(range(n))
         if split is not None:
@@ -140,14 +153,22 @@ class TransCrossSmilesDataset:
                     f"Available: {list(splits.keys())}"
                 )
 
-        # Filter out SMILES longer than max_smiles_len
+        # Filter out SMILES exceeding max_smiles_len (in tokenized length)
         filtered = []
+        skipped = 0
         for idx in self.indices:
             token_ids = self.tokenizer.encode(
                 self.smiles[idx], add_bos=True, add_eos=True
             )
             if len(token_ids) <= max_smiles_len:
                 filtered.append(idx)
+            else:
+                skipped += 1
+        if skipped > 0:
+            print(
+                f"[{split}] Skipped {skipped}/{len(self.indices)} samples "
+                f"exceeding max_smiles_len={max_smiles_len}"
+            )
         self.indices = filtered
 
     def __len__(self):
@@ -169,8 +190,8 @@ class TransCrossSmilesDataset:
                 token_ids[-1] = self.tokenizer.eos_id
 
         # Teacher forcing: input = [BOS] + tokens, target = tokens + [EOS]
-        input_ids = token_ids[:-1]  # includes BOS, excludes EOS
-        target_ids = token_ids[1:]   # excludes BOS, includes EOS
+        input_ids = token_ids[:-1]
+        target_ids = token_ids[1:]
 
         return {
             "ir": ir_vec,
