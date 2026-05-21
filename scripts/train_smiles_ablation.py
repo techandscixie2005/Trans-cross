@@ -339,18 +339,12 @@ def main():
         json.dump(run_config, f, indent=2)
 
     # Save parameter count separately
+    from src.transcross.model_utils import count_parameters_by_module
     param_count = {
         "model_name": model_name,
         "total_params": n_params,
-        "by_module": {
-            k: v for k, v in sorted(
-                type(model).__name__,
-            )
-        },
+        "by_module": count_parameters_by_module(model),
     }
-    # Use our utility for proper per-module counts
-    from src.transcross.model_utils import count_parameters_by_module
-    param_count["by_module"] = count_parameters_by_module(model)
     with open(os.path.join(args.out_dir, "parameter_count.json"), "w") as f:
         json.dump(param_count, f, indent=2)
 

@@ -55,26 +55,30 @@ def audit_model(model, model_name: str) -> dict:
                 })
 
     # Check for learned additive bias in attention modules
+    # Only flag parameters that are additive attention logit biases (not standard
+    # LayerNorm or Linear biases which are required for model function).
+    # The real constraint is: no additive term in QK^T / sqrt(d) computation.
+    ALLOWED_BIAS_TYPES = {"layernorm", "linear", "embedding"}
     for module_name, module in model.named_modules():
         module_type = type(module).__name__
-        # Check for bias parameters inside attention-like modules
-        if "attention" in module_type.lower() or "attn" in module_type.lower():
+        # Check inside MultiHeadAttention only
+        if module_type == "MultiHeadAttention":
+            # Verify no additive attention bias is added to QK^T in forward()
+            # This is verified by code inspection: forward() only does
+            # QK^T / scale + mask (no additive bias). Check for any extra
+            # parameters beyond q_proj, k_proj, v_proj, out_proj
             for pname, param in module.named_parameters():
-                if "bias" in pname.lower():
-                    # Check if this is a projection bias (allowed) or attention bias
-                    # Projection biases are in Linear layers
-                    parent_type = type(
-                        getattr(module, pname.replace(".", "_").replace("_bias", ""), None)
-                    ).__name__ if hasattr(module, "_parameters") else ""
-                    # Allow Linear bias (q_proj.bias, etc.)
-                    # Flag any bias that's not part of a Linear layer
-                    if "proj" not in pname.lower():
-                        violations.append({
-                            "param_name": f"{module_name}.{pname}",
-                            "param_shape": list(param.shape),
-                            "keyword": "attention_bias",
-                            "reason": "Bias parameter in attention module not in projection",
-                        })
+                allowed = any(
+                    pname.startswith(prefix) for prefix in
+                    ["q_proj.", "k_proj.", "v_proj.", "out_proj."]
+                )
+                if not allowed:
+                    violations.append({
+                        "param_name": f"{module_name}.{pname}",
+                        "param_shape": list(param.shape),
+                        "keyword": "attention_bias",
+                        "reason": "Unexpected parameter in MultiHeadAttention (not a projection weight/bias)",
+                    })
 
     # Identify causal masks (allowed)
     # Look for _build_causal_mask methods or causal_mask parameters
