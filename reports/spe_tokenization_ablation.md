@@ -43,6 +43,7 @@ SPE is introduced to:
 - Average generated SPE token length
 - SPE token length reduction ratio
 - Generation examples (target vs predicted)
+- Prediction diversity (unique predictions / total)
 
 ## 5. SPE Vocabulary Summary
 - Vocab size: **256** (reached target)
@@ -77,12 +78,12 @@ SPE is introduced to:
 | ir_tokenizer | 12,032 | 12,032 |
 | h1_tokenizer | 11,392 | 11,392 |
 | c13_tokenizer | 12,800 | 12,800 |
-| ir_mod / h1_mod / c13_mod | 128 each | 128 each |
-| encoder_layers (E0) | 1,189,632 | — |
-| ir_intra + h1_intra + c13_intra (E1) | — | 198,272 each |
-| ir_cross + h1_cross + c13_cross (E1) | — | 198,528 each |
+| ir/h1/c13 mod | 128 each | 128 each |
+| encoder (E0: 6 layers) | 1,189,632 | — |
+| intra encoders (E1: 3×1 layer) | — | 594,816 |
+| cross attn (E1: 3×1 layer) | — | 595,584 |
 | decoder | 608,000 | 608,000 |
-| _direct_params (CLS) | 128 | 128 |
+| CLS token | 128 | 128 |
 | **TOTAL** | **1,834,368** | **1,835,136** |
 | **Relative diff** | | **0.0418%** |
 
@@ -105,69 +106,115 @@ Report: `reports/spe_attention_bias_audit.md`
 
 ## 8. Server Run Trace
 - **Code path:** `/data/home/sczc698/run/xxy/Trans-cross/code/`
-- **Git commit:** `0c02237` (fix: remove explicit --mem from SPE Slurm scripts)
+- **Git commit:** `7d244db`
 - **Environment:** miniforge3/24.11, transpec conda env
 - **Data:** `/data/home/sczc698/run/xxy/Trans-cross/data/processed/`
 - **SPE vocab:** `spe_vocab_256.json` (256 tokens, 214 merges)
 
-### Commands
-```bash
-# Build vocab
-python scripts/build_spe_vocab.py \
-  --processed-dir /data/home/sczc698/run/xxy/Trans-cross/data/processed \
-  --out /data/home/sczc698/run/xxy/Trans-cross/data/processed/spe_vocab_256.json \
-  --vocab-size 256 --min-frequency 2 --split train
-
-# Parameter check
-python scripts/compare_model_params.py \
-  --processed-dir /data/home/sczc698/run/xxy/Trans-cross/data/processed \
-  --vocab /data/home/sczc698/run/xxy/Trans-cross/data/processed/spe_vocab_256.json \
-  --config configs/smiles_spe_equal_param.yaml
-
-# Bias audit
-python scripts/audit_attention_bias.py \
-  --processed-dir /data/home/sczc698/run/xxy/Trans-cross/data/processed \
-  --config configs/smiles_spe_equal_param.yaml
-```
-
 ### Slurm Jobs
-| Job ID | Model | Node | Status |
-|---|---|---|---|
-| 987740 | E0-SPE (concat_equal) | g0030 | Running |
-| 987741 | E1-SPE (intra_cross_equal) | g0042 | Running |
-
-- Partition: gpu
-- GPUs: 1 each
-- Time: 12:00:00 each
-- Logs: `/data/home/sczc698/run/xxy/Trans-cross/runs/slurm_logs/`
-
-### Smoke Training (1 epoch, CPU)
-| Model | Train Loss | Valid Loss | Test Loss | Test Acc |
+| Job ID | Model | Node | Elapsed | Status |
 |---|---|---|---|---|
-| E0-SPE | 4.6502 | 4.5449 | 4.5257 | 0.1676 |
-| E1-SPE | 4.6807 | 4.5444 | 4.5272 | 0.1659 |
+| 987740 | E0-SPE (concat_equal) | g0030 | 2:20 | COMPLETED |
+| 987741 | E1-SPE (intra_cross_equal) | g0042 | 2:22 | COMPLETED |
+
+- Partition: gpu, GPUs: 1 each
+- Logs: `/data/home/sczc698/run/xxy/Trans-cross/runs/slurm_logs/`
 
 ### Run Directories
 - E0-SPE: `/data/home/sczc698/run/xxy/Trans-cross/runs/spe_equal_concat_seed42`
 - E1-SPE: `/data/home/sczc698/run/xxy/Trans-cross/runs/spe_equal_intra_cross_seed42`
 
-## 9. Results (placeholder — training in progress)
+## 9. Results
 
-| tokenizer | model | test loss | token acc | exact | canonical exact | validity | avg char len | avg token len |
+### Test Split
+| tokenizer | model | test loss | token acc | exact | canonical | validity | avg char len | unique preds |
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| regex_atom | E0 concat | 1.442 | 0.611 | 0.000 | — | 0.677 | 51.85 | — |
+| regex_atom | E1 intra_cross | 1.478 | 0.577 | 0.000 | — | 0.721 | 24.37 | — |
+| **spe** | **E0 concat** | **3.880** | **0.192** | **0.000** | **0.000** | **1.000** | **18.52** | **46/684** |
+| **spe** | **E1 intra_cross** | **3.942** | **0.177** | **0.000** | **0.000** | **0.728** | **14.83** | **122/684** |
 
-Results pending completion of Slurm jobs 987740 and 987741 (30 epochs).
+### Valid Split
+| tokenizer | model | validity | avg char len | unique preds |
+|---|---|---|---|---|
+| **spe** | **E0 concat** | **1.000** | **18.37** | — |
+| **spe** | **E1 intra_cross** | **0.756** | **15.23** | — |
 
-## 10. Prediction Examples (placeholder)
-| target | atom E0 | atom E1 | SPE E0 | SPE E1 | notes |
-|---|---|---|---|---|---|
+### Training Curves
+| model | best epoch | best valid loss | final train loss | final train acc |
+|---|---|---|---|---|
+| E0-SPE | 23 | 3.907 | 2.181 | 0.467 |
+| E1-SPE | 15 | 3.930 | 1.609 | 0.614 |
 
-Pending evaluation after training.
+Both models show significant overfitting (train loss continues decreasing while valid loss plateaus).
 
-## 11. Conclusion (placeholder)
-Pending experiment completion. Preliminary observations:
-- SPE achieves 77.9% sequence length reduction
-- Train unk rate is 0% (perfect coverage)
-- Parameter matching within 0.0418% (well under 1% constraint)
-- No attention bias violations
-- Smoke training converges normally with finite loss
+## 10. Prediction Examples
+| target | atom E0 | atom E1 | SPE E0 | SPE E1 |
+|---|---|---|---|---|
+| C[C@@H](N)CO | — | — | CCCCCCOc1ccc(C)cc1 | CCCc1ccc(O)cc1 |
+| CCCC(CC)CO | — | — | CCCCCCOc1ccc(C)cc1 | CCCCCC1 |
+| c1ccc(CN2CCNCC2)cc1 | — | — | CCCC(=O)c1ccccc1 | Cc1ccc(C(=O)O)cc1 |
+| O=C(Cc1ccc(-c2ccccc2)cc1)c1ccccc1 | — | — | Nc1cccc(C(=O)O)c1 | Cc1ccc(C(=O)c2ccccc2)cc1 |
+| Cn1c(=O)sc2ccccc21 | — | — | Cc1ccc(C(=O)c2ccccc2)cc1 | O=C(O)c1ccccc1Cl |
+
+SPE models tend to produce shorter, simpler SMILES. E0-SPE exhibits severe mode collapse
+(repeating a small set of templates). E1-SPE has more diversity but generates many
+invalid SMILES with unclosed rings and extra parentheses.
+
+### E0-SPE Top Generated SMILES (mode collapse evidence)
+| Generated SMILES | Count (of 684 test) |
+|---|---|
+| CCCC(=O)c1ccccc1 | 151 |
+| CCCCCCOc1ccc(C)cc1 | 90 |
+| Cc1ccc(C(=O)O)cc1 | 63 |
+| Clc1ccc(Cc2ccccc2)cc1 | 61 |
+| CCCCCCOc1ccccc1 | 50 |
+
+### E1-SPE Top Generated SMILES
+| Generated SMILES | Count (of 684 test) |
+|---|---|
+| Cc1ccc(C(=O)O)cc1 | 109 |
+| CCCCCC1 | 89 |
+| Cc1ccc(CO)cc1 | 42 |
+| CCCCCCN1 | 40 |
+| CCCCCC1CC1 | 24 |
+
+## 11. Conclusion
+
+### SPE improves validity?
+**Yes, but with caveats.** E0-SPE achieves 100% RDKit validity (vs 67.7% atom-E0),
+but this is due to severe **mode collapse** — the model generates only 46 unique
+SMILES across 684 test samples. E1-SPE achieves 72.8% validity (vs 72.1% atom-E1),
+a negligible improvement.
+
+### SPE improves exact/canonical exact match?
+**No.** Exact match remains 0.000 for both models under both tokenizers.
+
+### SPE reduces generation length burden?
+**Yes.** Average generated character length drops from 51.85→18.52 (E0) and
+24.37→14.83 (E1). However, shorter outputs do not translate to correct outputs.
+
+### E0 or E1 wins under SPE?
+**E1-SPE is the better model** despite lower validity. E1 produces 122 unique
+predictions (vs 46 for E0) and generates more chemically diverse SMILES.
+E0-SPE's 100% validity is meaningless — the model collapsed to a few templates.
+
+### Is exact match still zero?
+**Yes.**
+
+### Key Scientific Finding
+The SPE tokenizer with vocab_size=256 and aggressive merging (77.9% length reduction)
+**induces mode collapse in the DirectConcat encoder (E0)**. The IntraCross encoder
+(E1) resists collapse, producing more diverse outputs. This suggests that:
+
+1. Extremely short target sequences (mean 4.15 SPE tokens) may force the decoder
+   into a low-diversity regime where a small set of template SMILES dominates.
+2. The IntraCross encoder provides richer representations that help the decoder
+   maintain output diversity even with a constrained tokenizer.
+3. A larger SPE vocabulary (512 or 1024) might reduce mode collapse by allowing
+   more fine-grained token sequences.
+
+### Recommendation
+Future work should try SPE with vocab_size=512 to trade off between sequence
+length and output diversity. The current SPE configuration (256 tokens, 77.9%
+reduction) is too aggressive for this task.
