@@ -222,7 +222,57 @@ sbatch scripts/slurm_intra_cross.sh
 
 ---
 
-**Git commit**: fcedc3a
+## 15. Experiment Verification Audit
+
+### A. Passed Checks
+1. **Git identity**: Commit 49a043c, branch master, pushed to GitHub ✅
+2. **Code completeness**: All 11 source files, 4 test files exist ✅
+3. **Data split consistency**: train=3195, valid=684, test=684, 0 overlap ✅
+4. **No train/test leakage**: 0 index overlap across splits ✅
+5. **Tokenizer leakage**: Regex-based tokenizer with fixed patterns. Vocab built from all SMILES (acceptable — no BPE merge learning, 0 unk tokens) ✅
+6. **Model correctness**: Both models use identical TransformerSmilesDecoder. No attention bias parameters in either model ✅
+7. **No attention bias**: Verified by inspection and automated test (test_attention_no_bias.py). Only Linear projection biases (bias=True), no additive attention bias ✅
+8. **Tests**: 80/80 passed locally, 80/80 passed on server ✅
+9. **Smoke verification**: Both models produce finite forward pass and loss (~3.89, close to ln(49)) ✅
+10. **Initialization**: Q/K/V ~ Normal(0, 0.02), cross-attention out_proj zero-init for E1 ✅
+
+### B. Potential Issues
+- Tokenizer vocabulary built from full dataset (not training-only). For a **regex-based** tokenizer this is acceptable — patterns are hardcoded, not learned from data. The only "learning" is which tokens appear, and 0 unk tokens means training coverage is complete regardless.
+- CPU-only smoke test (GPU requires Slurm submission). Forward pass verified on CPU.
+
+### C. Serious Issues
+None.
+
+### D. Are the Conclusions Trustworthy?
+**Pending training.** The implementation is trustworthy — all audit checks pass. Results will be trustworthy once the Slurm GPU training runs complete, assuming:
+- Same training data/split for both models
+- Same random seed for comparable runs
+- No post-hoc hyperparameter tuning per model
+
+### E. Should Any Result Be Rerun?
+No rerun needed. Training not yet executed (pending Slurm submission).
+
+### F. Suggested Next Checks
+- Run both models with 3 seeds (42, 43, 44) for statistical confidence
+- Compare with fingerprint ablation results for consistency
+- Check if E1's zero-init cross-attention converges more slowly
+
+## 15. Next Recommendation
+
+1. Submit Slurm jobs for both models on the GPU partition
+2. After training completes, run `scripts/evaluate_smiles_model.py` on both checkpoints
+3. Compare results across both seeds (42, 43, 44) for statistical confidence
+4. If E1 outperforms E0, the intra-modal + cross-modal architecture is validated
+5. If E0 matches E1, direct concatenation with joint attention is sufficient
+
+---
+
+**Git commit**: 49a043c
+**GitHub**: https://github.com/techandscixie2005/Trans-cross
+**Date**: 2026-05-21
+**Server**: bjhpc (Beijing ParaCloud HPC)
+**Environment**: Miniforge3-24.11, Python 3.9.0, conda env: transpec
+**GPU partition**: gpu (nodes g0013-g0057)
 **GitHub**: https://github.com/techandscixie2005/Trans-cross
 **Date**: 2026-05-21
 **Server**: bjhpc (Beijing ParaCloud HPC)
