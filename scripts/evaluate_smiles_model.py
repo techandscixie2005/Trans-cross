@@ -1,7 +1,26 @@
 """Evaluate a trained SMILES generation model.
 
-Loads a checkpoint and tokenizer, runs evaluation on valid/test splits,
-and saves predictions and summary metrics.
+Supports two modes:
+1. Run-dir mode (preferred): --run-dir to load config + checkpoint automatically
+2. Legacy mode: --checkpoint + --model + --d-model etc.
+
+Usage (run-dir mode):
+  python scripts/evaluate_smiles_model.py \
+    --processed-dir /path/to/processed \
+    --run-dir /path/to/training/run \
+    --split valid \
+    --save-predictions
+
+Usage (legacy mode):
+  python scripts/evaluate_smiles_model.py \
+    --processed-dir /path/to/processed \
+    --checkpoint /path/to/best_model.pt \
+    --model concat \
+    --d-model 128 \
+    --encoder-layers 6 \
+    --decoder-layers 2 \
+    --num-heads 4 \
+    --out-dir /path/to/output
 """
 
 import argparse
@@ -9,6 +28,7 @@ import json
 import os
 import sys
 import csv
+import yaml
 
 import torch
 from torch.utils.data import DataLoader
@@ -20,6 +40,7 @@ from src.transcross.collate import smiles_collate_fn
 from src.transcross.smiles_tokenizer import SmilesTokenizer
 from src.transcross.models.smiles_concat import DirectConcatSmilesModel
 from src.transcross.models.smiles_intra_cross import IntraCrossSmilesModel
+from src.transcross.models.factory import build_smiles_model
 from src.transcross.generation import greedy_decode
 
 try:
@@ -55,21 +76,69 @@ def is_valid(smi):
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate SMILES generation model.")
-    parser.add_argument("--processed-dir", required=True)
-    parser.add_argument("--checkpoint", required=True)
-    parser.add_argument("--model", choices=["concat", "intra_cross"], required=True)
-    parser.add_argument("--d-model", type=int, default=128)
-    parser.add_argument("--encoder-layers", type=int, default=2)
-    parser.add_argument("--decoder-layers", type=int, default=2)
-    parser.add_argument("--num-heads", type=int, default=4)
-    parser.add_argument("--patch-size", type=int, default=64)
-    parser.add_argument("--max-smiles-len", type=int, default=160)
+    # Run-dir mode (preferred)
+    parser.add_argument("--run-dir", default=None,
+                       help="Path to training run directory (loads config + checkpoint)")
+    # Legacy mode
+    parser.add_argument("--checkpoint", default=None)
+    parser.add_argument("--model", default="concat",
+                       choices=["concat", "intra_cross", "concat_equal", "intra_cross_equal"])
+    parser.add_argument("--d-model", type=int, default=None)
+    parser.add_argument("--encoder-layers", type=int, default=None)
+    parser.add_argument("--decoder-layers", type=int, default=None)
+    parser.add_argument("--num-heads", type=int, default=None)
+    parser.add_argument("--patch-size", type=int, default=None)
+    parser.add_argument("--max-smiles-len", type=int, default=None)
     parser.add_argument("--batch-size", type=int, default=32)
-    parser.add_argument("--out-dir", required=True)
+    # Common
+    parser.add_argument("--processed-dir", required=True)
+    parser.add_argument("--out-dir", default=None)
     parser.add_argument("--split", choices=["valid", "test"], default="test")
+    parser.add_argument("--save-predictions", action="store_true", default=False)
     args = parser.parse_args()
 
-    os.makedirs(args.out_dir, exist_ok=True)
+    # Resolve run-dir vs legacy mode
+    if args.run_dir:
+        # Run-dir mode: load config + checkpoint from run directory
+        config_path = os.path.join(args.run_dir, "config_used.json")
+        checkpoint_path = os.path.join(args.run_dir, "best_model.pt")
+        if not os.path.exists(config_path):
+            print(f"ERROR: config_used.json not found in {args.run_dir}")
+            sys.exit(1)
+        if not os.path.exists(checkpoint_path):
+            print(f"ERROR: best_model.pt not found in {args.run_dir}")
+            sys.exit(1)
+
+        with open(config_path) as f:
+            run_config = json.load(f)
+        model_type = run_config.get("model", "concat")
+        # If config_content is present (YAML mode), use it
+        yaml_config = run_config.get("config_content", None)
+        args.checkpoint = checkpoint_path
+        args.model = model_type
+        out_dir = args.out_dir or args.run_dir
+
+        # Resolve model params
+        d_model = run_config.get("d_model", args.d_model or 128)
+        encoder_layers = run_config.get("encoder_layers", args.encoder_layers or 2)
+        decoder_layers = run_config.get("decoder_layers", args.decoder_layers or 2)
+        num_heads = run_config.get("num_heads", args.num_heads or 4)
+        patch_size = run_config.get("patch_size", args.patch_size or 64)
+        max_smiles_len = run_config.get("max_smiles_len", args.max_smiles_len or 160)
+    else:
+        # Legacy mode: use CLI args
+        if not args.checkpoint:
+            parser.error("Either --run-dir or --checkpoint is required")
+        out_dir = args.out_dir or os.path.dirname(args.checkpoint)
+        yaml_config = None
+        d_model = args.d_model or 128
+        encoder_layers = args.encoder_layers or 2
+        decoder_layers = args.decoder_layers or 2
+        num_heads = args.num_heads or 4
+        patch_size = args.patch_size or 64
+        max_smiles_len = args.max_smiles_len or 160
+
+    os.makedirs(out_dir, exist_ok=True)
     device = get_device()
 
     # Load tokenizer
@@ -80,7 +149,7 @@ def main():
     # Dataset
     dataset = TransCrossSmilesDataset(
         args.processed_dir, split=args.split,
-        max_smiles_len=args.max_smiles_len, tokenizer=tokenizer,
+        max_smiles_len=max_smiles_len, tokenizer=tokenizer,
     )
     loader = DataLoader(
         dataset, batch_size=args.batch_size, shuffle=False,
@@ -89,22 +158,25 @@ def main():
     )
 
     # Model
-    model_kwargs = dict(
-        vocab_size=tokenizer.vocab_size,
-        d_model=args.d_model,
-        encoder_layers=args.encoder_layers,
-        decoder_layers=args.decoder_layers,
-        num_heads=args.num_heads,
-        patch_size=args.patch_size,
-        dropout=0.1,
-        pad_id=pad_id,
-        max_smiles_len=args.max_smiles_len,
-    )
-
-    if args.model == "concat":
-        model = DirectConcatSmilesModel(**model_kwargs)
+    if yaml_config and args.model in ("concat_equal", "intra_cross_equal"):
+        model = build_smiles_model(args.model, yaml_config, tokenizer.vocab_size, pad_id)
     else:
-        model = IntraCrossSmilesModel(**model_kwargs)
+        model_kwargs = dict(
+            vocab_size=tokenizer.vocab_size,
+            d_model=d_model,
+            encoder_layers=encoder_layers,
+            decoder_layers=decoder_layers,
+            num_heads=num_heads,
+            patch_size=patch_size,
+            dropout=0.1,
+            pad_id=pad_id,
+            max_smiles_len=max_smiles_len,
+        )
+
+        if args.model in ("concat", "concat_equal"):
+            model = DirectConcatSmilesModel(**model_kwargs)
+        else:
+            model = IntraCrossSmilesModel(**model_kwargs)
 
     ckpt = torch.load(args.checkpoint, map_location=device, weights_only=False)
     model.load_state_dict(ckpt["model_state_dict"])
@@ -118,6 +190,7 @@ def main():
     total_samples = 0
     total_pred_len = 0
     examples = []
+    failure_cases = []
 
     for batch in loader:
         ir = batch["ir"].to(device)
@@ -125,7 +198,7 @@ def main():
         nmr_13c = batch["nmr_13c"].to(device)
 
         pred_ids = greedy_decode(model, ir, nmr_1h, nmr_13c,
-                                  tokenizer, max_len=args.max_smiles_len)
+                                  tokenizer, max_len=max_smiles_len)
 
         for i in range(len(batch["smiles"])):
             target_smi = batch["smiles"][i]
@@ -145,7 +218,7 @@ def main():
             total_samples += 1
             total_pred_len += pred_len
 
-            predictions.append({
+            pred_entry = {
                 "idx": idx,
                 "target_smiles": target_smi,
                 "predicted_smiles": pred_smi,
@@ -153,7 +226,8 @@ def main():
                 "valid": valid,
                 "canon_exact_match": canon_exact,
                 "pred_length": pred_len,
-            })
+            }
+            predictions.append(pred_entry)
 
             if len(examples) < 20:
                 examples.append({
@@ -163,33 +237,37 @@ def main():
                     "valid": valid,
                 })
 
+            if not exact:
+                failure_cases.append(pred_entry)
+
     # Save predictions CSV
-    pred_csv = os.path.join(args.out_dir, f"predictions_{args.split}.csv")
-    with open(pred_csv, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=predictions[0].keys())
-        writer.writeheader()
-        writer.writerows(predictions)
-    print(f"Saved predictions to {pred_csv}")
+    if args.save_predictions:
+        pred_csv = os.path.join(out_dir, f"predictions_{args.split}.csv")
+        with open(pred_csv, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=predictions[0].keys())
+            writer.writeheader()
+            writer.writerows(predictions)
+        print(f"Saved predictions to {pred_csv}")
 
     # Summary
     summary = {
         "split": args.split,
         "num_samples": total_samples,
-        "token_accuracy": "N/A (use training metrics)",
-        "exact_string_match": round(total_correct / total_samples, 4),
-        "canonical_exact_match": round(total_canon_correct / total_samples, 4),
-        "rdkit_validity": round(total_valid / total_samples, 4) if _HAS_RDKIT else "RDKit not available",
-        "avg_pred_length": round(total_pred_len / total_samples, 2),
+        "exact_string_match": round(total_correct / total_samples, 4) if total_samples > 0 else 0,
+        "canonical_exact_match": round(total_canon_correct / total_samples, 4) if total_samples > 0 else 0,
+        "rdkit_validity": round(total_valid / total_samples, 4) if _HAS_RDKIT and total_samples > 0 else ("RDKit not available" if not _HAS_RDKIT else 0),
+        "avg_pred_length": round(total_pred_len / total_samples, 2) if total_samples > 0 else 0,
         "examples": examples[:10],
+        "failure_cases": failure_cases[:20],
     }
 
-    summary_path = os.path.join(args.out_dir, f"evaluation_summary_{args.split}.json")
+    summary_path = os.path.join(out_dir, f"evaluation_summary_{args.split}.json")
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2, ensure_ascii=False)
 
     print(f"\nEvaluation Summary ({args.split}):")
     for k, v in summary.items():
-        if k != "examples":
+        if k not in ("examples", "failure_cases"):
             print(f"  {k}: {v}")
     print(f"\nSaved summary to {summary_path}")
 

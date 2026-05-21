@@ -36,7 +36,9 @@ class IntraCrossSmilesModel(nn.Module):
         encoder_layers: int = 2,
         cross_layers: int = 1,
         fusion_layers: int = 1,
+        encoder_ffn_dim: int = 512,
         decoder_layers: int = 2,
+        decoder_ffn_dim: int = 512,
         num_heads: int = 4,
         dropout: float = 0.1,
         zero_init_cross_out_proj: bool = True,
@@ -59,36 +61,36 @@ class IntraCrossSmilesModel(nn.Module):
 
         # Intra-modal encoders (separate per modality)
         self.ir_intra = nn.ModuleList([
-            TransformerBlockPreLN(d_model, num_heads, dropout=dropout)
+            TransformerBlockPreLN(d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout)
             for _ in range(encoder_layers)
         ])
         self.h1_intra = nn.ModuleList([
-            TransformerBlockPreLN(d_model, num_heads, dropout=dropout)
+            TransformerBlockPreLN(d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout)
             for _ in range(encoder_layers)
         ])
         self.c13_intra = nn.ModuleList([
-            TransformerBlockPreLN(d_model, num_heads, dropout=dropout)
+            TransformerBlockPreLN(d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout)
             for _ in range(encoder_layers)
         ])
 
         # Cross-modal attention blocks
         self.ir_cross = nn.ModuleList([
             CrossAttentionBlockPreLN(
-                d_model, num_heads, dropout=dropout,
+                d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout,
                 zero_init_out_proj=zero_init_cross_out_proj,
             )
             for _ in range(cross_layers)
         ])
         self.h1_cross = nn.ModuleList([
             CrossAttentionBlockPreLN(
-                d_model, num_heads, dropout=dropout,
+                d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout,
                 zero_init_out_proj=zero_init_cross_out_proj,
             )
             for _ in range(cross_layers)
         ])
         self.c13_cross = nn.ModuleList([
             CrossAttentionBlockPreLN(
-                d_model, num_heads, dropout=dropout,
+                d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout,
                 zero_init_out_proj=zero_init_cross_out_proj,
             )
             for _ in range(cross_layers)
@@ -100,7 +102,7 @@ class IntraCrossSmilesModel(nn.Module):
 
         # Optional fusion layers after concatenation
         self.fusion_layers = nn.ModuleList([
-            TransformerBlockPreLN(d_model, num_heads, dropout=dropout)
+            TransformerBlockPreLN(d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout)
             for _ in range(fusion_layers)
         ]) if fusion_layers > 0 else None
 
@@ -110,6 +112,7 @@ class IntraCrossSmilesModel(nn.Module):
             d_model=d_model,
             num_layers=decoder_layers,
             num_heads=num_heads,
+            d_ff=decoder_ffn_dim,
             dropout=dropout,
             max_len=max_smiles_len,
             pad_id=pad_id,

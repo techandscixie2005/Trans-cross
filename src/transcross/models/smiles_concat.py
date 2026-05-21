@@ -33,7 +33,9 @@ class DirectConcatSmilesModel(nn.Module):
         patch_size: int = 64,
         d_model: int = 128,
         encoder_layers: int = 2,
+        encoder_ffn_dim: int = 512,
         decoder_layers: int = 2,
+        decoder_ffn_dim: int = 512,
         num_heads: int = 4,
         dropout: float = 0.1,
         pad_id: int = 0,
@@ -59,7 +61,7 @@ class DirectConcatSmilesModel(nn.Module):
 
         # Encoder layers (bias-free self-attention)
         self.encoder_layers = nn.ModuleList([
-            TransformerBlockPreLN(d_model, num_heads, dropout=dropout)
+            TransformerBlockPreLN(d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout)
             for _ in range(encoder_layers)
         ])
 
@@ -69,6 +71,7 @@ class DirectConcatSmilesModel(nn.Module):
             d_model=d_model,
             num_layers=decoder_layers,
             num_heads=num_heads,
+            d_ff=decoder_ffn_dim,
             dropout=dropout,
             max_len=max_smiles_len,
             pad_id=pad_id,

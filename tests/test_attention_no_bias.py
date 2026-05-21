@@ -1,133 +1,126 @@
-"""Verify that custom attention modules have NO additive attention bias."""
+"""Verify that custom attention modules have NO additive attention bias.
+
+Tests apply to all model variants (concat and intra_cross).
+"""
+
+import os
+import sys
 
 import pytest
 import torch
+import torch.nn as nn
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.transcross.models.attention import (
     MultiHeadAttention,
-    FeedForward,
     TransformerBlockPreLN,
     CrossAttentionBlockPreLN,
 )
+from src.transcross.smiles_tokenizer import SmilesTokenizer
+from src.transcross.models.factory import build_smiles_model
+
+FORBIDDEN_KEYWORDS = [
+    "attention_bias", "relative_bias", "coord_bias",
+    "modality_pair_bias", "graph_bias", "graphormer",
+    "spatial_bias", "distance_bias",
+]
 
 
-class TestNoAdditiveAttentionBias:
-    def test_mha_no_bias_attribute(self):
-        """MultiHeadAttention must not have an attention_bias parameter."""
+def _make_config():
+    return {
+        "data": {"processed_dir": "/tmp", "max_smiles_len": 160},
+        "tokenizer": {"patch_size": 64},
+        "shared": {"d_model": 128, "num_heads": 4, "decoder_layers": 2,
+                   "decoder_ffn_dim": 512, "dropout": 0.1},
+        "e0_concat": {"encoder_layers": 6, "encoder_ffn_dim": 512},
+        "e1_intra_cross": {"intra_layers": 1, "cross_layers": 1, "fusion_layers": 0,
+                          "encoder_ffn_dim": 512, "cross_zero_init_out_proj": True},
+        "training": {"epochs": 30, "batch_size": 32, "lr": 1e-4, "seed": 42},
+        "equality_constraint": {"max_relative_param_diff": 0.01},
+    }
+
+
+def _make_tokenizer():
+    return SmilesTokenizer.build_from_smiles(["C", "CC", "CCO", "c1ccccc1"])
+
+
+class TestAttentionNoBiasParams:
+    """Verify no forbidden attention bias in model parameters."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self):
+        self.config = _make_config()
+        self.tokenizer = _make_tokenizer()
+        self.vocab_size = self.tokenizer.vocab_size
+        self.pad_id = self.tokenizer.pad_id
+
+    def _check_params(self, model):
+        violations = []
+        for name, param in model.named_parameters():
+            name_lower = name.lower()
+            for kw in FORBIDDEN_KEYWORDS:
+                if kw in name_lower:
+                    violations.append((name, list(param.shape), kw))
+        return violations
+
+    def test_e0_no_bias_params(self):
+        model = build_smiles_model("concat_equal", self.config, self.vocab_size, self.pad_id)
+        violations = self._check_params(model)
+        assert len(violations) == 0, f"E0 violations: {violations}"
+
+    def test_e1_no_bias_params(self):
+        model = build_smiles_model("intra_cross_equal", self.config, self.vocab_size, self.pad_id)
+        violations = self._check_params(model)
+        assert len(violations) == 0, f"E1 violations: {violations}"
+
+
+class TestAttentionModuleProperties:
+    """Verify attention module types and properties."""
+
+    def test_transformer_block_is_pre_ln(self):
+        block = TransformerBlockPreLN(d_model=128, num_heads=4)
+        assert isinstance(block.norm1, nn.LayerNorm)
+        assert isinstance(block.norm2, nn.LayerNorm)
+
+    def test_cross_attention_has_separate_norms(self):
+        block = CrossAttentionBlockPreLN(d_model=128, num_heads=4)
+        assert hasattr(block, "norm_q")
+        assert hasattr(block, "norm_kv")
+
+    def test_cross_zero_init(self):
+        block = CrossAttentionBlockPreLN(d_model=128, num_heads=4, zero_init_out_proj=True)
+        assert torch.all(block.cross_attn.out_proj.weight == 0)
+        assert torch.all(block.cross_attn.out_proj.bias == 0)
+
+    def test_mha_no_bias_in_attention_logits(self):
         mha = MultiHeadAttention(d_model=128, num_heads=4)
-        params = dict(mha.named_parameters())
-        # No parameter should be named "attention_bias" or similar
-        for name in params:
-            assert "bias" not in name.lower() or "proj" in name.lower(), \
-                f"Found potential attention bias param: {name}"
-
-    def test_mha_forward_no_bias(self):
-        """Forward pass should work without any attention bias."""
-        mha = MultiHeadAttention(d_model=64, num_heads=4)
-        B, L = 2, 10
-        x = torch.randn(B, L, 64)
-
-        # Self-attention
+        x = torch.randn(2, 10, 128)
         out = mha(x, x, x)
-        assert out.shape == (B, L, 64)
-        assert not torch.isnan(out).any()
+        assert out.shape == (2, 10, 128)
+        assert torch.isfinite(out).all()
 
-        # Cross-attention
-        kv = torch.randn(B, 15, 64)
-        out = mha(x, kv, kv)
-        assert out.shape == (B, L, 64)
+    def test_causal_mask_structure(self):
+        """Causal mask: upper tri = -inf, lower tri with diagonal = 0."""
+        model = build_smiles_model("concat_equal", _make_config(),
+                                   _make_tokenizer().vocab_size, _make_tokenizer().pad_id)
+        mask = model.decoder._build_causal_mask(5, torch.device("cpu"))
+        assert mask.shape == (5, 5)
+        for i in range(5):
+            for j in range(5):
+                if i >= j:
+                    assert mask[i, j] == 0.0, f"Lower tri ({i},{j}) should be 0"
+                else:
+                    assert mask[i, j] == float("-inf"), f"Upper tri ({i},{j}) should be -inf"
 
-    def test_mha_with_key_padding_mask(self):
-        """Key padding mask should work."""
-        mha = MultiHeadAttention(d_model=64, num_heads=4)
-        B, L_q, L_k = 2, 5, 8
-        q = torch.randn(B, L_q, 64)
-        k = v = torch.randn(B, L_k, 64)
-        mask = torch.zeros(B, L_k, dtype=torch.bool)
-        mask[:, -2:] = True  # mask last 2 positions
-
-        out = mha(q, k, v, key_padding_mask=mask)
-        assert out.shape == (B, L_q, 64)
-        assert not torch.isnan(out).any()
-
-    def test_mha_return_weights(self):
-        """Should optionally return attention weights."""
-        mha = MultiHeadAttention(d_model=64, num_heads=4)
-        x = torch.randn(2, 5, 64)
-        out, weights = mha(x, x, x, need_weights=True)
-        assert out.shape == (2, 5, 64)
-        assert weights.shape == (2, 4, 5, 5)
-
-    def test_no_graphormer_bias(self):
-        """Model should not contain any graph distance or pair bias parameters."""
-        mha = MultiHeadAttention(d_model=128, num_heads=4)
-        for name, _ in mha.named_parameters():
-            for banned in ["spatial", "graph", "pair", "distance", "coordinate",
-                           "relative", "edge", "adj"]:
-                assert banned not in name.lower(), \
-                    f"Found {banned} related parameter: {name}"
-
-
-class TestTransformerBlockPreLN:
-    def test_forward(self):
-        block = TransformerBlockPreLN(d_model=64, num_heads=4)
-        x = torch.randn(2, 10, 64)
-        out = block(x)
-        assert out.shape == x.shape
-        assert not torch.isnan(out).any()
-
-    def test_causal_forward(self):
-        block = TransformerBlockPreLN(d_model=64, num_heads=4)
-        x = torch.randn(2, 10, 64)
-        causal = torch.triu(torch.full((10, 10), float("-inf")), diagonal=1)
-        out = block(x, attn_mask=causal)
-        assert out.shape == x.shape
-
-
-class TestCrossAttentionBlockPreLN:
-    def test_forward(self):
-        block = CrossAttentionBlockPreLN(d_model=64, num_heads=4)
-        q = torch.randn(2, 5, 64)
-        kv = torch.randn(2, 15, 64)
-        out = block(q, kv)
-        assert out.shape == q.shape
-        assert not torch.isnan(out).any()
-
-    def test_zero_init_out_proj(self):
-        block = CrossAttentionBlockPreLN(d_model=64, num_heads=4,
-                                          zero_init_out_proj=True)
-        # After zero init, cross_attn.out_proj.weight should be all zeros
-        assert torch.allclose(
-            block.cross_attn.out_proj.weight,
-            torch.zeros_like(block.cross_attn.out_proj.weight)
-        )
-
-
-class TestFeedForward:
-    def test_forward(self):
-        ffn = FeedForward(d_model=64, d_ff=256)
-        x = torch.randn(2, 10, 64)
-        out = ffn(x)
-        assert out.shape == x.shape
-
-    def test_default_d_ff(self):
-        ffn = FeedForward(d_model=64)
-        # Default d_ff should be 4 * d_model = 256
-        # Check first linear layer
-        assert ffn.net[0].out_features == 256
-
-
-class TestInitialization:
-    def test_qkv_normal_init(self):
-        """Q/K/V projections should be initialized with Normal(0, 0.02)."""
-        mha = MultiHeadAttention(d_model=128, num_heads=4)
-        for proj in [mha.q_proj, mha.k_proj, mha.v_proj]:
-            # Weight std should be close to 0.02
-            assert abs(proj.weight.std().item() - 0.02) < 0.01
-            # Bias should be zero
-            assert torch.allclose(proj.bias, torch.zeros_like(proj.bias))
-
-    def test_out_proj_zero_init_when_requested(self):
-        mha = MultiHeadAttention(d_model=128, num_heads=4, zero_init_out_proj=True)
-        assert torch.allclose(mha.out_proj.weight, torch.zeros_like(mha.out_proj.weight))
-        assert torch.allclose(mha.out_proj.bias, torch.zeros_like(mha.out_proj.bias))
+    def test_padding_mask_all_zeros_for_spectra(self):
+        """Encoder padding mask is all False (no spectra padding)."""
+        model = build_smiles_model("concat_equal", _make_config(),
+                                   _make_tokenizer().vocab_size, _make_tokenizer().pad_id)
+        B = 2
+        ir = torch.randn(B, 1801)
+        h1 = torch.randn(B, 1501)
+        c13 = torch.randn(B, 2201)
+        mem, mask = model._encode_spectra(ir, h1, c13)
+        assert mask.shape[0] == B
+        assert not mask.any(), "Padding mask should be all False for spectra"

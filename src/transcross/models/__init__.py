@@ -10,3 +10,4 @@ from .tokenizers import PatchTokenizer1D, ModalityEmbedding
 from .smiles_decoder import TransformerSmilesDecoder
 from .smiles_concat import DirectConcatSmilesModel
 from .smiles_intra_cross import IntraCrossSmilesModel
+from .factory import build_smiles_model

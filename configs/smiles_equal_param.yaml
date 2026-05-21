@@ -1,0 +1,49 @@
+# Equal-Parameter SMILES Generation Ablation Configuration
+# E0: DirectConcat encoder vs E1: IntraCross encoder
+# Both models share identical decoder, tokenizer, and patch tokenization.
+
+data:
+  processed_dir: /data/home/sczc698/run/xxy/Trans-cross/data/processed
+  max_smiles_len: 160
+
+tokenizer:
+  patch_size: 64
+  use_modality_embedding: true
+  use_absolute_position_embedding: true
+  use_coordinate_encoding: false
+
+shared:
+  d_model: 128
+  num_heads: 4
+  decoder_layers: 2
+  decoder_ffn_dim: 512
+  dropout: 0.1
+  init_std: 0.02
+
+# E0: DirectConcat encoder with 6 self-attention layers
+# Compensates for E1's extra cross-attention blocks by adding more layers.
+e0_concat:
+  encoder_layers: 6
+  encoder_ffn_dim: 512
+
+# E1: IntraCross encoder with 1 intra-modal + 1 cross-modal layer, no fusion.
+# Uses separate intra-modal encoders per modality and cross-modal attention.
+e1_intra_cross:
+  intra_layers: 1
+  cross_layers: 1
+  fusion_layers: 0
+  encoder_ffn_dim: 512
+  cross_zero_init_out_proj: true
+
+# Training hyperparameters (identical for E0 and E1)
+training:
+  epochs: 30
+  batch_size: 32
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  grad_clip: 1.0
+  seed: 42
+
+# Parameter equality constraint: E0 and E1 must be within 1%
+equality_constraint:
+  max_relative_param_diff: 0.01

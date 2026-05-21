@@ -1,6 +1,12 @@
 """Train SMILES generation ablation models (concat vs intra_cross).
 
-Usage:
+Usage (config mode, preferred):
+  python scripts/train_smiles_ablation.py \
+    --config configs/smiles_equal_param.yaml \
+    --model concat_equal \
+    --out-dir /path/to/run
+
+Usage (legacy CLI mode):
   python scripts/train_smiles_ablation.py \
     --processed-dir /data/home/sczc698/run/xxy/Trans-cross/data/processed \
     --model concat \
@@ -23,7 +29,7 @@ import os
 import sys
 import csv
 import time
-import math
+import yaml
 from typing import Dict, Optional
 
 import torch
@@ -38,6 +44,11 @@ from src.transcross.collate import smiles_collate_fn
 from src.transcross.smiles_tokenizer import SmilesTokenizer
 from src.transcross.models.smiles_concat import DirectConcatSmilesModel
 from src.transcross.models.smiles_intra_cross import IntraCrossSmilesModel
+from src.transcross.models.factory import build_smiles_model
+from src.transcross.model_utils import (
+    count_trainable_parameters,
+    format_parameter_table,
+)
 from src.transcross.generation import greedy_decode
 
 
@@ -154,36 +165,69 @@ def save_checkpoint(model, optimizer, epoch, metrics, path):
     }, path)
 
 
+def load_config(config_path: str) -> dict:
+    with open(config_path) as f:
+        return yaml.safe_load(f)
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Train SMILES generation ablation model."
     )
-    parser.add_argument("--processed-dir", required=True)
-    parser.add_argument("--model", choices=["concat", "intra_cross"], required=True)
-    parser.add_argument("--epochs", type=int, default=30)
-    parser.add_argument("--batch-size", type=int, default=32)
-    parser.add_argument("--d-model", type=int, default=128)
-    parser.add_argument("--encoder-layers", type=int, default=2)
-    parser.add_argument("--decoder-layers", type=int, default=2)
-    parser.add_argument("--num-heads", type=int, default=4)
-    parser.add_argument("--patch-size", type=int, default=64)
-    parser.add_argument("--lr", type=float, default=1e-4)
-    parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--max-smiles-len", type=int, default=160)
+    # Config mode (preferred)
+    parser.add_argument("--config", default=None, help="Path to YAML config file")
+    parser.add_argument("--model", default="concat",
+                       choices=["concat", "intra_cross", "concat_equal", "intra_cross_equal"])
+    # Legacy CLI args (used when --config not provided, or override config values)
+    parser.add_argument("--processed-dir", default=None)
+    parser.add_argument("--epochs", type=int, default=None)
+    parser.add_argument("--batch-size", type=int, default=None)
+    parser.add_argument("--d-model", type=int, default=None)
+    parser.add_argument("--encoder-layers", type=int, default=None)
+    parser.add_argument("--decoder-layers", type=int, default=None)
+    parser.add_argument("--num-heads", type=int, default=None)
+    parser.add_argument("--patch-size", type=int, default=None)
+    parser.add_argument("--lr", type=float, default=None)
+    parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--max-smiles-len", type=int, default=None)
     parser.add_argument("--out-dir", required=True)
     parser.add_argument("--mixed-precision", action="store_true", default=False)
     args = parser.parse_args()
 
-    set_seed(args.seed)
+    # Load config if provided
+    config = None
+    if args.config:
+        config = load_config(args.config)
+        print(f"Loaded config from {args.config}")
+        print(json.dumps(config, indent=2))
+
+    # Resolve parameters: CLI overrides > config > defaults
+    train_cfg = config.get("training", {}) if config else {}
+    shared_cfg = config.get("shared", {}) if config else {}
+    data_cfg = config.get("data", {}) if config else {}
+    tok_cfg = config.get("tokenizer", {}) if config else {}
+
+    processed_dir = args.processed_dir or data_cfg.get("processed_dir")
+    if not processed_dir:
+        parser.error("--processed-dir is required (or set in config)")
+
+    epochs = args.epochs if args.epochs is not None else train_cfg.get("epochs", 30)
+    batch_size = args.batch_size if args.batch_size is not None else train_cfg.get("batch_size", 32)
+    lr = args.lr if args.lr is not None else train_cfg.get("lr", 1e-4)
+    seed = args.seed if args.seed is not None else train_cfg.get("seed", 42)
+    max_smiles_len = args.max_smiles_len if args.max_smiles_len is not None else data_cfg.get("max_smiles_len", 160)
+    patch_size = args.patch_size if args.patch_size is not None else tok_cfg.get("patch_size", 64)
+
+    set_seed(seed)
     device = get_device()
 
     os.makedirs(args.out_dir, exist_ok=True)
 
     # Load tokenizer
-    vocab_path = os.path.join(args.processed_dir, "smiles_vocab.json")
+    vocab_path = os.path.join(processed_dir, "smiles_vocab.json")
     if not os.path.exists(vocab_path):
         print("Building SMILES vocabulary...")
-        smiles_path = os.path.join(args.processed_dir, "canonical_smiles.txt")
+        smiles_path = os.path.join(processed_dir, "canonical_smiles.txt")
         with open(smiles_path) as f:
             smiles_list = [l.strip() for l in f if l.strip()]
         tokenizer = SmilesTokenizer.build_from_smiles(smiles_list)
@@ -196,92 +240,129 @@ def main():
 
     # Datasets
     train_ds = TransCrossSmilesDataset(
-        args.processed_dir, split="train",
-        max_smiles_len=args.max_smiles_len, tokenizer=tokenizer,
+        processed_dir, split="train",
+        max_smiles_len=max_smiles_len, tokenizer=tokenizer,
     )
     valid_ds = TransCrossSmilesDataset(
-        args.processed_dir, split="valid",
-        max_smiles_len=args.max_smiles_len, tokenizer=tokenizer,
+        processed_dir, split="valid",
+        max_smiles_len=max_smiles_len, tokenizer=tokenizer,
     )
     test_ds = TransCrossSmilesDataset(
-        args.processed_dir, split="test",
-        max_smiles_len=args.max_smiles_len, tokenizer=tokenizer,
+        processed_dir, split="test",
+        max_smiles_len=max_smiles_len, tokenizer=tokenizer,
     )
 
     print(f"Train: {len(train_ds)}, Valid: {len(valid_ds)}, Test: {len(test_ds)}")
 
     train_loader = DataLoader(
-        train_ds, batch_size=args.batch_size, shuffle=True,
+        train_ds, batch_size=batch_size, shuffle=True,
         collate_fn=lambda b: smiles_collate_fn(b, pad_id),
         num_workers=4, pin_memory=True,
     )
     valid_loader = DataLoader(
-        valid_ds, batch_size=args.batch_size, shuffle=False,
+        valid_ds, batch_size=batch_size, shuffle=False,
         collate_fn=lambda b: smiles_collate_fn(b, pad_id),
         num_workers=2, pin_memory=True,
     )
     test_loader = DataLoader(
-        test_ds, batch_size=args.batch_size, shuffle=False,
+        test_ds, batch_size=batch_size, shuffle=False,
         collate_fn=lambda b: smiles_collate_fn(b, pad_id),
         num_workers=2, pin_memory=True,
     )
 
     # Create model
-    model_kwargs = dict(
-        vocab_size=tokenizer.vocab_size,
-        ir_len=1801, h1_len=1501, c13_len=2201,
-        patch_size=args.patch_size,
-        d_model=args.d_model,
-        encoder_layers=args.encoder_layers,
-        decoder_layers=args.decoder_layers,
-        num_heads=args.num_heads,
-        dropout=0.1,
-        pad_id=pad_id,
-        max_smiles_len=args.max_smiles_len,
-    )
-
-    if args.model == "concat":
-        model = DirectConcatSmilesModel(**model_kwargs)
-        model_name = "DirectConcatSmilesModel"
+    if config and args.model in ("concat_equal", "intra_cross_equal"):
+        # Use factory for equal-param models
+        model = build_smiles_model(args.model, config, tokenizer.vocab_size, pad_id)
+        if args.model == "concat_equal":
+            model_name = "DirectConcatSmilesModel-equal"
+        else:
+            model_name = "IntraCrossSmilesModel-equal"
     else:
-        model = IntraCrossSmilesModel(**model_kwargs)
-        model_name = "IntraCrossSmilesModel"
+        # Legacy model creation
+        d_model = args.d_model or shared_cfg.get("d_model", 128)
+        encoder_layers = args.encoder_layers or (
+            config.get("e0_concat", {}).get("encoder_layers", 2) if config else 2
+        )
+        decoder_layers = args.decoder_layers or shared_cfg.get("decoder_layers", 2)
+        num_heads = args.num_heads or shared_cfg.get("num_heads", 4)
+
+        model_kwargs = dict(
+            vocab_size=tokenizer.vocab_size,
+            ir_len=1801, h1_len=1501, c13_len=2201,
+            patch_size=patch_size,
+            d_model=d_model,
+            encoder_layers=encoder_layers,
+            decoder_layers=decoder_layers,
+            num_heads=num_heads,
+            dropout=0.1,
+            pad_id=pad_id,
+            max_smiles_len=max_smiles_len,
+        )
+
+        if args.model in ("concat", "concat_equal"):
+            model = DirectConcatSmilesModel(**model_kwargs)
+            model_name = "DirectConcatSmilesModel"
+        else:
+            model = IntraCrossSmilesModel(**model_kwargs)
+            model_name = "IntraCrossSmilesModel"
 
     model = model.to(device)
-    n_params = model.count_params()
-    print(f"Model: {model_name}, Parameters: {n_params:,}")
+    n_params = count_trainable_parameters(model)
+    print(f"Model: {model_name}")
+    print(f"Parameters: {n_params:,}")
+    print(format_parameter_table(model))
 
-    # Save config
-    config = {
+    # Save full config snapshot
+    run_config = {
         "model": args.model,
         "model_name": model_name,
         "vocab_size": tokenizer.vocab_size,
         "n_params": n_params,
-        "d_model": args.d_model,
-        "encoder_layers": args.encoder_layers,
-        "decoder_layers": args.decoder_layers,
-        "num_heads": args.num_heads,
-        "patch_size": args.patch_size,
-        "lr": args.lr,
-        "seed": args.seed,
-        "batch_size": args.batch_size,
-        "epochs": args.epochs,
-        "max_smiles_len": args.max_smiles_len,
+        "processed_dir": processed_dir,
+        "lr": lr,
+        "seed": seed,
+        "batch_size": batch_size,
+        "epochs": epochs,
+        "max_smiles_len": max_smiles_len,
+        "patch_size": patch_size,
         "train_samples": len(train_ds),
         "valid_samples": len(valid_ds),
         "test_samples": len(test_ds),
     }
-    with open(os.path.join(args.out_dir, "config_used.json"), "w") as f:
-        json.dump(config, f, indent=2)
+    # Merge config into run_config for traceability
+    if config:
+        run_config["config_file"] = args.config
+        run_config["config_content"] = config
 
-    optimizer = optim.AdamW(model.parameters(), lr=args.lr)
-    scaler = torch.amp.GradScaler() if args.mixed_precision else None
+    with open(os.path.join(args.out_dir, "config_used.json"), "w") as f:
+        json.dump(run_config, f, indent=2)
+
+    # Save parameter count separately
+    param_count = {
+        "model_name": model_name,
+        "total_params": n_params,
+        "by_module": {
+            k: v for k, v in sorted(
+                type(model).__name__,
+            )
+        },
+    }
+    # Use our utility for proper per-module counts
+    from src.transcross.model_utils import count_parameters_by_module
+    param_count["by_module"] = count_parameters_by_module(model)
+    with open(os.path.join(args.out_dir, "parameter_count.json"), "w") as f:
+        json.dump(param_count, f, indent=2)
+
+    weight_decay = train_cfg.get("weight_decay", 1e-4) if config else 1e-4
+    optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    scaler = torch.amp.GradScaler("cuda") if args.mixed_precision else None
 
     best_valid_loss = float("inf")
     best_epoch = 0
     history = []
 
-    for epoch in range(1, args.epochs + 1):
+    for epoch in range(1, epochs + 1):
         t0 = time.time()
 
         train_loss, train_acc = train_epoch(
@@ -289,7 +370,7 @@ def main():
         )
         valid_loss, valid_acc, valid_exact = validate(
             model, valid_loader, pad_id, device, tokenizer,
-            max_len=args.max_smiles_len,
+            max_len=max_smiles_len,
         )
 
         elapsed = time.time() - t0
@@ -305,7 +386,7 @@ def main():
         history.append(entry)
 
         print(
-            f"Epoch {epoch:3d}/{args.epochs} | "
+            f"Epoch {epoch:3d}/{epochs} | "
             f"train_loss: {train_loss:.4f} | "
             f"valid_loss: {valid_loss:.4f} | "
             f"train_acc: {train_acc:.4f} | "
@@ -325,16 +406,17 @@ def main():
 
     # Save final checkpoint
     save_checkpoint(
-        model, optimizer, args.epochs,
+        model, optimizer, epochs,
         {"valid_loss": valid_loss, "valid_acc": valid_acc},
         os.path.join(args.out_dir, "final_model.pt"),
     )
 
     # Save training log
-    with open(os.path.join(args.out_dir, "training_log.csv"), "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=history[0].keys())
-        writer.writeheader()
-        writer.writerows(history)
+    if history:
+        with open(os.path.join(args.out_dir, "training_log.csv"), "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=history[0].keys())
+            writer.writeheader()
+            writer.writerows(history)
 
     # Load best model and evaluate on test set
     best_ckpt = torch.load(os.path.join(args.out_dir, "best_model.pt"),
@@ -343,7 +425,7 @@ def main():
 
     test_loss, test_acc, test_exact = validate(
         model, test_loader, pad_id, device, tokenizer,
-        max_len=args.max_smiles_len,
+        max_len=max_smiles_len,
     )
 
     metrics = {
