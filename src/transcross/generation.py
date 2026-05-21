@@ -14,6 +14,7 @@ def greedy_decode(
     tokenizer,
     max_len: int = 256,
     device: Optional[torch.device] = None,
+    return_eos_info: bool = False,
 ) -> List[List[int]]:
     """Greedy decode SMILES from spectral inputs.
 
@@ -25,9 +26,11 @@ def greedy_decode(
         tokenizer: SmilesTokenizer instance
         max_len: maximum generation length
         device: torch device
+        return_eos_info: if True, returns (token_ids, eos_hit, eos_step)
 
     Returns:
-        list of token ID lists for each sample in batch
+        list of token ID lists for each sample in batch.
+        If return_eos_info, returns tuple (token_ids, eos_hit, eos_step).
     """
     if device is not None:
         model = model.to(device)
@@ -49,8 +52,10 @@ def greedy_decode(
     input_ids = torch.full((B, 1), bos_id, dtype=torch.long, device=ir.device)
     finished = torch.zeros(B, dtype=torch.bool, device=ir.device)
     results: List[List[int]] = [[] for _ in range(B)]
+    eos_hit = [False] * B
+    eos_step = [-1] * B
 
-    for _ in range(max_len):
+    for step in range(max_len):
         logits = model.decoder(input_ids, encoder_memory,
                                memory_padding_mask=memory_mask)
         next_logits = logits[:, -1, :]  # (B, vocab_size)
@@ -61,6 +66,8 @@ def greedy_decode(
                 tok = next_tokens[i].item()
                 if tok == eos_id:
                     finished[i] = True
+                    eos_hit[i] = True
+                    eos_step[i] = step
                 else:
                     results[i].append(tok)
 
@@ -69,4 +76,6 @@ def greedy_decode(
 
         input_ids = torch.cat([input_ids, next_tokens.unsqueeze(-1)], dim=1)
 
+    if return_eos_info:
+        return results, eos_hit, eos_step
     return results

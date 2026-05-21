@@ -1,0 +1,50 @@
+# Equal-Parameter SPE-512 SMILES Generation Ablation Configuration
+# E0: DirectConcat encoder + SPE decoder
+# E1: IntraCross encoder + SPE decoder
+# Both share identical SPE tokenizer and decoder architecture.
+# Vocab size increased from 256 to 512 for finer-grained SMILES tokenization.
+
+data:
+  processed_dir: /data/home/sczc698/run/xxy/Trans-cross/data/processed
+  max_smiles_len: 48
+
+tokenizer:
+  type: spe
+  vocab_path: /data/home/sczc698/run/xxy/Trans-cross/data/processed/spe_vocab_512.json
+  target_vocab_size: 512
+  min_frequency: 2
+  patch_size: 64
+  use_modality_embedding: true
+  use_absolute_position_embedding: true
+
+shared:
+  d_model: 128
+  num_heads: 4
+  decoder_layers: 2
+  decoder_ffn_dim: 512
+  dropout: 0.1
+  init_std: 0.02
+
+# E0: DirectConcat encoder with 6 self-attention layers
+e0_concat:
+  encoder_layers: 6
+  encoder_ffn_dim: 512
+
+# E1: IntraCross encoder with 1 intra-modal + 1 cross-modal layer, no fusion
+e1_intra_cross:
+  intra_layers: 1
+  cross_layers: 1
+  fusion_layers: 0
+  encoder_ffn_dim: 512
+  cross_zero_init_out_proj: true
+
+training:
+  epochs: 30
+  batch_size: 32
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  grad_clip: 1.0
+  seed: 42
+
+equality_constraint:
+  max_relative_param_diff: 0.01

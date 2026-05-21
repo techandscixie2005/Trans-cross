@@ -1,24 +1,23 @@
 #!/usr/bin/env python
-"""Evaluate a trained SMILES generation model.
+"""Evaluate a trained SMILES generation model with full chemical metrics.
 
-Supports both regex_atom and SPE tokenizers.
-Automatically detects tokenizer type from run config.
+Supports regex_atom and SPE tokenizers. Auto-detects tokenizer type from run config.
+Outputs predictions CSV and comprehensive evaluation summary JSON.
 
 Usage (run-dir mode):
   python scripts/evaluate_smiles_model.py \
-    --processed-dir /path/to/processed \
     --run-dir /path/to/training/run \
-    --split valid \
+    --split test \
+    --processed-dir /data/... \
     --save-predictions
 """
 
 import argparse
+import csv
 import json
 import os
 import sys
-import csv
-import yaml
-from typing import Union
+from typing import Optional
 
 import torch
 from torch.utils.data import DataLoader
@@ -31,12 +30,15 @@ from src.transcross.smiles_tokenizer import SmilesTokenizer
 from src.transcross.tokenization.spe_tokenizer import SPETokenizer
 from src.transcross.models.factory import build_smiles_model
 from src.transcross.generation import greedy_decode
-
-try:
-    from rdkit import Chem
-    _HAS_RDKIT = True
-except ImportError:
-    _HAS_RDKIT = False
+from src.transcross.chem_metrics import (
+    canonicalize,
+    is_valid,
+    compute_tanimoto,
+    scaffold_match,
+    functional_group_f1,
+    levenshtein,
+    compute_summary_from_rows,
+)
 
 
 def get_device():
@@ -45,28 +47,9 @@ def get_device():
     return torch.device("cpu")
 
 
-def canonicalize(smi):
-    if not _HAS_RDKIT or not smi:
-        return None
-    mol = Chem.MolFromSmiles(smi)
-    if mol is None:
-        return None
-    return Chem.MolToSmiles(mol, canonical=True)
-
-
-def is_valid(smi):
-    if not _HAS_RDKIT or not smi:
-        return False
-    mol = Chem.MolFromSmiles(smi)
-    return mol is not None
-
-
 def load_tokenizer_for_eval(processed_dir: str, run_config: dict):
-    """Load tokenizer based on run config's tokenizer_type."""
     tok_type = run_config.get("tokenizer_type", "regex_atom")
-
     if tok_type == "spe":
-        # Try from config_content first, then fall back to default path
         config_content = run_config.get("config_content", {})
         tok_cfg = config_content.get("tokenizer", {})
         vocab_path = tok_cfg.get("vocab_path")
@@ -78,14 +61,27 @@ def load_tokenizer_for_eval(processed_dir: str, run_config: dict):
     else:
         vocab_path = os.path.join(processed_dir, "smiles_vocab.json")
         tokenizer = SmilesTokenizer.load(vocab_path)
-
     return tokenizer, tok_type
+
+
+def compute_token_accuracy(pred_ids, target_ids, pad_id):
+    """Compute per-sample token accuracy (excluding pad)."""
+    if len(pred_ids) == 0:
+        return 0.0
+    min_len = min(len(pred_ids), len(target_ids))
+    correct = 0
+    total = 0
+    for i in range(min_len):
+        if target_ids[i] != pad_id:
+            total += 1
+            if pred_ids[i] == target_ids[i]:
+                correct += 1
+    return correct / total if total > 0 else 0.0
 
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate SMILES generation model.")
-    parser.add_argument("--run-dir", default=None,
-                       help="Path to training run directory")
+    parser.add_argument("--run-dir", default=None)
     parser.add_argument("--checkpoint", default=None)
     parser.add_argument("--model", default="concat",
                        choices=["concat", "intra_cross", "concat_equal", "intra_cross_equal"])
@@ -99,9 +95,14 @@ def main():
     parser.add_argument("--processed-dir", required=True)
     parser.add_argument("--out-dir", default=None)
     parser.add_argument("--split", choices=["valid", "test"], default="test")
-    parser.add_argument("--save-predictions", action="store_true", default=False)
+    parser.add_argument("--save-predictions", action="store_true", default=True)
+    parser.add_argument("--model-name", default=None,
+                       help="Override model name in output")
+    parser.add_argument("--seed", type=int, default=None,
+                       help="Override seed in output")
     args = parser.parse_args()
 
+    # ── Load config from run directory ──────────────────────────────────
     if args.run_dir:
         config_path = os.path.join(args.run_dir, "config_used.json")
         checkpoint_path = os.path.join(args.run_dir, "best_model.pt")
@@ -115,23 +116,25 @@ def main():
         with open(config_path) as f:
             run_config = json.load(f)
         model_type = run_config.get("model", "concat")
-        yaml_config = run_config.get("config_content", None)
+        yaml_config = run_config.get("config_content", {})
         args.checkpoint = checkpoint_path
         args.model = model_type
         out_dir = args.out_dir or args.run_dir
 
-        d_model = run_config.get("d_model", args.d_model or 128)
-        encoder_layers = run_config.get("encoder_layers", args.encoder_layers or 2)
-        decoder_layers = run_config.get("decoder_layers", args.decoder_layers or 2)
-        num_heads = run_config.get("num_heads", args.num_heads or 4)
-        patch_size = run_config.get("patch_size", args.patch_size or 64)
-        max_smiles_len = run_config.get("max_smiles_len", args.max_smiles_len or 160)
+        d_model = run_config.get("d_model", 128)
+        encoder_layers = run_config.get("encoder_layers", 2)
+        decoder_layers = run_config.get("decoder_layers", 2)
+        num_heads = run_config.get("num_heads", 4)
+        patch_size = run_config.get("patch_size", 64)
+        max_smiles_len = run_config.get("max_smiles_len", 160)
         tokenizer_type = run_config.get("tokenizer_type", "regex_atom")
+        eval_seed = args.seed or run_config.get("seed", 42)
+        eval_model_name = args.model_name or run_config.get("model_name", model_type)
     else:
         if not args.checkpoint:
             parser.error("Either --run-dir or --checkpoint is required")
         out_dir = args.out_dir or os.path.dirname(args.checkpoint)
-        yaml_config = None
+        yaml_config = {}
         d_model = args.d_model or 128
         encoder_layers = args.encoder_layers or 2
         decoder_layers = args.decoder_layers or 2
@@ -140,17 +143,20 @@ def main():
         max_smiles_len = args.max_smiles_len or 160
         tokenizer_type = "regex_atom"
         run_config = {}
+        eval_seed = args.seed or 0
+        eval_model_name = args.model_name or args.model
 
     os.makedirs(out_dir, exist_ok=True)
     device = get_device()
 
-    # Load tokenizer
+    # ── Load tokenizer ──────────────────────────────────────────────────
     tokenizer, tok_type = load_tokenizer_for_eval(args.processed_dir, run_config)
     pad_id = tokenizer.pad_id
+    eos_id = tokenizer.eos_id
     vocab_size = tokenizer.vocab_size
-    print(f"Tokenizer type: {tok_type}, vocab_size: {vocab_size}")
+    print(f"Tokenizer: {tok_type}, vocab_size={vocab_size}")
 
-    # Dataset
+    # ── Dataset ─────────────────────────────────────────────────────────
     spe_vocab_path = None
     if tok_type == "spe":
         config_content = run_config.get("config_content", {})
@@ -168,22 +174,16 @@ def main():
         num_workers=2, pin_memory=True,
     )
 
-    # Model
+    # ── Build model ─────────────────────────────────────────────────────
     if yaml_config and args.model in ("concat_equal", "intra_cross_equal"):
         model = build_smiles_model(args.model, yaml_config, vocab_size, pad_id)
     else:
         model_kwargs = dict(
-            vocab_size=vocab_size,
-            d_model=d_model,
-            encoder_layers=encoder_layers,
-            decoder_layers=decoder_layers,
-            num_heads=num_heads,
-            patch_size=patch_size,
-            dropout=0.1,
-            pad_id=pad_id,
-            max_smiles_len=max_smiles_len,
+            vocab_size=vocab_size, d_model=d_model,
+            encoder_layers=encoder_layers, decoder_layers=decoder_layers,
+            num_heads=num_heads, patch_size=patch_size, dropout=0.1,
+            pad_id=pad_id, max_smiles_len=max_smiles_len,
         )
-
         if args.model in ("concat", "concat_equal"):
             from src.transcross.models.smiles_concat import DirectConcatSmilesModel
             model = DirectConcatSmilesModel(**model_kwargs)
@@ -196,89 +196,184 @@ def main():
     model = model.to(device)
     model.eval()
 
-    predictions = []
-    total_correct = 0
-    total_canon_correct = 0
-    total_valid = 0
-    total_samples = 0
-    total_pred_len = 0
-    examples = []
+    # ── Evaluate ────────────────────────────────────────────────────────
+    rows = []
+    total_eos_hit = 0
+    total_hit_max = 0
+    total_loss = 0.0
+    total_acc = 0.0
+    n_batches = 0
 
     for batch in loader:
         ir = batch["ir"].to(device)
         nmr_1h = batch["nmr_1h"].to(device)
         nmr_13c = batch["nmr_13c"].to(device)
+        input_ids = batch["input_ids"].to(device)
+        target_ids = batch["target_ids"].to(device)
 
-        pred_ids = greedy_decode(model, ir, nmr_1h, nmr_13c,
-                                  tokenizer, max_len=max_smiles_len)
+        # Teacher-forcing loss & token accuracy
+        with torch.no_grad():
+            logits = model(ir, nmr_1h, nmr_13c, input_ids)
+            B, T, V = logits.shape
+            loss = torch.nn.functional.cross_entropy(
+                logits.reshape(B * T, V), target_ids.reshape(B * T),
+                ignore_index=pad_id,
+            )
+            preds_tf = logits.argmax(dim=-1)
+            non_pad = target_ids != pad_id
+            acc = (preds_tf == target_ids) & non_pad
+            batch_acc = acc.sum().float() / non_pad.sum().float() if non_pad.any() else 0.0
+
+        total_loss += loss.item()
+        total_acc += batch_acc.item()
+        n_batches += 1
+
+        # Greedy decode (with EOS info)
+        pred_ids, batch_eos_hit, batch_eos_step = greedy_decode(
+            model, ir, nmr_1h, nmr_13c, tokenizer,
+            max_len=max_smiles_len, return_eos_info=True,
+        )
 
         for i in range(len(batch["smiles"])):
             target_smi = batch["smiles"][i]
-            idx = batch["idx"][i]
+            idx_val = batch["idx"][i]
             pred_smi = tokenizer.decode(pred_ids[i], remove_special=True)
             pred_len_chars = len(pred_smi)
             pred_len_tokens = len(pred_ids[i])
+            target_len_chars = len(target_smi)
 
-            exact = int(pred_smi == target_smi)
-            valid = int(is_valid(pred_smi)) if _HAS_RDKIT else -1
+            # Chemical metrics
+            exact = 1 if pred_smi == target_smi else 0
+            valid = 1 if is_valid(pred_smi) else 0
             target_canon = canonicalize(target_smi)
             pred_canon = canonicalize(pred_smi)
-            canon_exact = int(pred_canon == target_canon) if pred_canon and target_canon else 0
+            canon_exact = 1 if (pred_canon and target_canon and pred_canon == target_canon) else 0
+            tanimoto = compute_tanimoto(target_smi, pred_smi)
+            scaff = scaffold_match(target_smi, pred_smi)
+            fg_p, fg_r, fg_f1 = functional_group_f1(target_smi, pred_smi)
+            lev = levenshtein(target_smi, pred_smi)
+            tok_acc = compute_token_accuracy(pred_ids[i], target_ids[i].tolist(), pad_id)
 
-            total_correct += exact
-            total_valid += valid
-            total_canon_correct += canon_exact
-            total_samples += 1
-            total_pred_len += pred_len_chars
+            # EOS detection from decode info
+            eos_hit = batch_eos_hit[i]
+            eos_pos = batch_eos_step[i]
+            hit_max = (not eos_hit) and (pred_len_tokens >= max_smiles_len)
+            if eos_hit:
+                total_eos_hit += 1
+            if hit_max:
+                total_hit_max += 1
 
-            pred_entry = {
-                "idx": idx,
+            row = {
+                "idx": idx_val,
                 "target_smiles": target_smi,
-                "predicted_smiles": pred_smi,
+                "pred_smiles": pred_smi,
+                "target_len": target_len_chars,
+                "pred_len": pred_len_chars,
                 "exact_match": exact,
-                "valid": valid,
-                "canon_exact_match": canon_exact,
-                "pred_char_length": pred_len_chars,
+                "canonical_exact_match": canon_exact,
+                "rdkit_valid": valid,
+                "tanimoto": round(tanimoto, 6),
+                "scaffold_match": scaff,
+                "fg_precision": round(fg_p, 6),
+                "fg_recall": round(fg_r, 6),
+                "fg_f1": round(fg_f1, 6),
+                "token_accuracy_sample": round(tok_acc, 6),
+                "levenshtein": lev,
                 "pred_token_length": pred_len_tokens,
+                "eos_hit": int(eos_hit),
+                "eos_position": eos_pos,
+                "hit_max_len": int(hit_max),
+                "split": args.split,
+                "model_name": eval_model_name,
+                "tokenizer_type": tok_type,
+                "seed": eval_seed,
             }
-            predictions.append(pred_entry)
+            rows.append(row)
 
-            if len(examples) < 20:
-                examples.append({
-                    "target": target_smi,
-                    "predicted": pred_smi,
-                    "exact": exact,
-                    "valid": valid,
-                })
+    n_samples = len(rows)
 
-    # Save predictions CSV
+    # ── Save predictions CSV ────────────────────────────────────────────
     if args.save_predictions:
         pred_csv = os.path.join(out_dir, f"predictions_{args.split}.csv")
+        fieldnames = [
+            "idx", "target_smiles", "pred_smiles", "target_len", "pred_len",
+            "exact_match", "canonical_exact_match", "rdkit_valid",
+            "tanimoto", "scaffold_match", "fg_precision", "fg_recall", "fg_f1",
+            "token_accuracy_sample", "levenshtein",
+            "pred_token_length", "eos_hit", "eos_position", "hit_max_len",
+            "split", "model_name", "tokenizer_type", "seed",
+        ]
         with open(pred_csv, "w", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=predictions[0].keys())
+            writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
             writer.writeheader()
-            writer.writerows(predictions)
-        print(f"Saved predictions to {pred_csv}")
+            writer.writerows(rows)
+        print(f"Saved predictions to {pred_csv} ({n_samples} rows)")
 
-    summary = {
-        "split": args.split,
-        "tokenizer_type": tok_type,
-        "num_samples": total_samples,
-        "exact_string_match": round(total_correct / total_samples, 4) if total_samples > 0 else 0,
-        "canonical_exact_match": round(total_canon_correct / total_samples, 4) if total_samples > 0 else 0,
-        "rdkit_validity": round(total_valid / total_samples, 4) if _HAS_RDKIT and total_samples > 0 else ("RDKit not available" if not _HAS_RDKIT else 0),
-        "avg_pred_char_length": round(total_pred_len / total_samples, 2) if total_samples > 0 else 0,
-        "examples": examples[:10],
-    }
+    # ── Compute full summary ────────────────────────────────────────────
+    summary = compute_summary_from_rows(
+        rows, split=args.split,
+        model_name=eval_model_name,
+        tokenizer_type=tok_type,
+        seed=eval_seed,
+    )
 
+    # Add teacher-forcing metrics
+    summary["teacher_forcing_loss"] = round(total_loss / n_batches, 6) if n_batches > 0 else 0
+    summary["teacher_forcing_token_accuracy"] = round(total_acc / n_batches, 6) if n_batches > 0 else 0
+
+    # Add EOS stats
+    summary["pct_ending_with_eos"] = round(total_eos_hit / n_samples * 100, 2) if n_samples > 0 else 0
+    summary["pct_hitting_max_len"] = round(total_hit_max / n_samples * 100, 2) if n_samples > 0 else 0
+
+    # Example predictions
+    examples = []
+    for r in rows[:20]:
+        examples.append({
+            "target": r["target_smiles"],
+            "predicted": r["pred_smiles"],
+            "exact": r["exact_match"],
+            "valid": r["rdkit_valid"],
+            "tanimoto": r["tanimoto"],
+        })
+    summary["examples"] = examples
+
+    # Failure cases (invalid predictions)
+    invalid_rows = [r for r in rows if not r["rdkit_valid"]]
+    failure_cases = []
+    for r in invalid_rows[:20]:
+        failure_cases.append({
+            "target": r["target_smiles"],
+            "predicted": r["pred_smiles"],
+            "tanimoto": r["tanimoto"],
+            "levenshtein": r["levenshtein"],
+        })
+    summary["failure_cases"] = failure_cases
+
+    # Save summary
     summary_path = os.path.join(out_dir, f"evaluation_summary_{args.split}.json")
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2, ensure_ascii=False)
 
+    # ── Print summary ───────────────────────────────────────────────────
     print(f"\nEvaluation Summary ({args.split}):")
-    for k, v in summary.items():
-        if k not in ("examples", "failure_cases"):
-            print(f"  {k}: {v}")
+    print(f"  Samples:              {n_samples}")
+    print(f"  Loss (TF):            {summary['teacher_forcing_loss']:.4f}")
+    print(f"  Token acc (TF):       {summary['teacher_forcing_token_accuracy']:.4f}")
+    print(f"  Exact string match:   {summary['exact_string_match']:.4f}")
+    print(f"  Canonical exact:      {summary['canonical_exact_match']:.4f}")
+    print(f"  RDKit validity:       {summary['rdkit_validity']:.4f}")
+    print(f"  Unique generated:     {summary['unique_generated']}")
+    print(f"  Unique ratio:         {summary['unique_ratio']:.4f}")
+    print(f"  Mode collapse score:  {summary['mode_collapse_score']:.4f}")
+    print(f"  Prediction entropy:   {summary['prediction_entropy']:.4f}")
+    print(f"  Mean Tanimoto:        {summary['mean_tanimoto']:.4f}")
+    print(f"  Mean Tanimoto (valid):{summary['mean_tanimoto_valid_only']:.4f}")
+    print(f"  Scaffold match:       {summary['scaffold_match_rate']:.4f}")
+    print(f"  FG-F1:                {summary['mean_fg_f1']:.4f}")
+    print(f"  Mean Levenshtein:     {summary['mean_levenshtein']:.2f}")
+    print(f"  Avg pred char len:    {summary['avg_pred_char_length']:.2f}")
+    print(f"  % ending w/ EOS:      {summary['pct_ending_with_eos']:.1f}%")
+    print(f"  % hitting max len:    {summary['pct_hitting_max_len']:.1f}%")
     print(f"\nSaved summary to {summary_path}")
 
 
