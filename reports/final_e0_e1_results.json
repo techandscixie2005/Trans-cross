@@ -1,0 +1,4704 @@
+{
+  "generated": "2026-05-21",
+  "run_dirs": [
+    "/data/home/sczc698/run/xxy/Trans-cross/runs/equal_concat_seed42",
+    "/data/home/sczc698/run/xxy/Trans-cross/runs/equal_intra_cross_seed42",
+    "/data/home/sczc698/run/xxy/Trans-cross/runs/spe_equal_concat_seed42",
+    "/data/home/sczc698/run/xxy/Trans-cross/runs/spe_equal_intra_cross_seed42"
+  ],
+  "tables": {
+    "tokenizer_statistics": [
+      {
+        "tokenizer": "regex_atom",
+        "vocab_size": "-",
+        "train_unk": "N/A",
+        "valid_unk": "N/A",
+        "test_unk": "N/A",
+        "mean_token_len": "N/A",
+        "p95_token_len": "N/A",
+        "max_token_len": "N/A"
+      }
+    ],
+    "parameter_verification": [
+      {
+        "tokenizer": "regex_atom",
+        "model_e0": "E0 DirectConcat",
+        "model_e1": "E1 IntraCross",
+        "total_params_e0": "1,789,361",
+        "total_params_e1": "1,790,129",
+        "decoder_params_e0": "562,993",
+        "decoder_params_e1": "562,993",
+        "relative_diff": "0.0429%"
+      },
+      {
+        "tokenizer": "spe",
+        "model_e0": "E0 DirectConcat",
+        "model_e1": "E1 IntraCross",
+        "total_params_e0": "1,834,368",
+        "total_params_e1": "1,835,136",
+        "decoder_params_e0": "608,000",
+        "decoder_params_e1": "608,000",
+        "relative_diff": "0.0419%"
+      }
+    ],
+    "per_seed_results": [
+      {
+        "tokenizer": "regex_atom",
+        "seed": 42,
+        "model": "E0 DirectConcat",
+        "loss": "1.4421",
+        "token_acc": "61.08%",
+        "exact_match": "0.00%",
+        "canon_exact": "0.00%",
+        "validity": "67.69%",
+        "unique_ratio": "32.02%",
+        "mode_collapse": "0.0775",
+        "tanimoto": "0.1037",
+        "scaffold": "0.00%",
+        "fg_f1": "0.1882",
+        "avg_char_len": "51.91"
+      },
+      {
+        "tokenizer": "regex_atom",
+        "seed": 42,
+        "model": "E1 IntraCross",
+        "loss": "1.4778",
+        "token_acc": "57.68%",
+        "exact_match": "0.00%",
+        "canon_exact": "0.00%",
+        "validity": "72.08%",
+        "unique_ratio": "24.12%",
+        "mode_collapse": "0.0497",
+        "tanimoto": "0.1059",
+        "scaffold": "0.00%",
+        "fg_f1": "0.1980",
+        "avg_char_len": "24.42"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E0 DirectConcat",
+        "loss": "3.8801",
+        "token_acc": "19.23%",
+        "exact_match": "0.00%",
+        "canon_exact": "0.00%",
+        "validity": "100.00%",
+        "unique_ratio": "6.58%",
+        "mode_collapse": "0.2208",
+        "tanimoto": "0.1400",
+        "scaffold": "0.00%",
+        "fg_f1": "0.3008",
+        "avg_char_len": "18.52"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E1 IntraCross",
+        "loss": "3.9418",
+        "token_acc": "17.72%",
+        "exact_match": "0.00%",
+        "canon_exact": "0.00%",
+        "validity": "72.81%",
+        "unique_ratio": "17.69%",
+        "mode_collapse": "0.1594",
+        "tanimoto": "0.1081",
+        "scaffold": "0.00%",
+        "fg_f1": "0.2052",
+        "avg_char_len": "14.83"
+      }
+    ],
+    "mean_std_over_seeds": [
+      {
+        "tokenizer": "regex_atom",
+        "metric": "Loss",
+        "e0_mean_std": "1.4421 +/- 0.0000",
+        "e1_mean_std": "1.4778 +/- 0.0000",
+        "winner": "E0",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "regex_atom",
+        "metric": "Token Accuracy",
+        "e0_mean_std": "0.6108 +/- 0.0000",
+        "e1_mean_std": "0.5768 +/- 0.0000",
+        "winner": "E0",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "regex_atom",
+        "metric": "Exact String Match",
+        "e0_mean_std": "0.000000 +/- 0.000000",
+        "e1_mean_std": "0.000000 +/- 0.000000",
+        "winner": "tie",
+        "confidence": "N/A"
+      },
+      {
+        "tokenizer": "regex_atom",
+        "metric": "Canonical Exact Match",
+        "e0_mean_std": "0.000000 +/- 0.000000",
+        "e1_mean_std": "0.000000 +/- 0.000000",
+        "winner": "tie",
+        "confidence": "N/A"
+      },
+      {
+        "tokenizer": "regex_atom",
+        "metric": "RDKit Validity",
+        "e0_mean_std": "0.6769 +/- 0.0000",
+        "e1_mean_std": "0.7208 +/- 0.0000",
+        "winner": "E1",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "regex_atom",
+        "metric": "Unique Ratio",
+        "e0_mean_std": "0.3202 +/- 0.0000",
+        "e1_mean_std": "0.2412 +/- 0.0000",
+        "winner": "E0",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "regex_atom",
+        "metric": "Mode Collapse",
+        "e0_mean_std": "0.0775 +/- 0.0000",
+        "e1_mean_std": "0.0497 +/- 0.0000",
+        "winner": "E1",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "regex_atom",
+        "metric": "Tanimoto Similarity",
+        "e0_mean_std": "0.1037 +/- 0.0000",
+        "e1_mean_std": "0.1059 +/- 0.0000",
+        "winner": "E1",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "regex_atom",
+        "metric": "Scaffold Match",
+        "e0_mean_std": "0.000000 +/- 0.000000",
+        "e1_mean_std": "0.000000 +/- 0.000000",
+        "winner": "tie",
+        "confidence": "N/A"
+      },
+      {
+        "tokenizer": "regex_atom",
+        "metric": "FG-F1",
+        "e0_mean_std": "0.1882 +/- 0.0000",
+        "e1_mean_std": "0.1980 +/- 0.0000",
+        "winner": "E1",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "regex_atom",
+        "metric": "Avg Char Length",
+        "e0_mean_std": "51.9100 +/- 0.0000",
+        "e1_mean_std": "24.4200 +/- 0.0000",
+        "winner": "E1",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "spe",
+        "metric": "Loss",
+        "e0_mean_std": "3.8801 +/- 0.0000",
+        "e1_mean_std": "3.9418 +/- 0.0000",
+        "winner": "E0",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "spe",
+        "metric": "Token Accuracy",
+        "e0_mean_std": "0.1923 +/- 0.0000",
+        "e1_mean_std": "0.1772 +/- 0.0000",
+        "winner": "E0",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "spe",
+        "metric": "Exact String Match",
+        "e0_mean_std": "0.000000 +/- 0.000000",
+        "e1_mean_std": "0.000000 +/- 0.000000",
+        "winner": "tie",
+        "confidence": "N/A"
+      },
+      {
+        "tokenizer": "spe",
+        "metric": "Canonical Exact Match",
+        "e0_mean_std": "0.000000 +/- 0.000000",
+        "e1_mean_std": "0.000000 +/- 0.000000",
+        "winner": "tie",
+        "confidence": "N/A"
+      },
+      {
+        "tokenizer": "spe",
+        "metric": "RDKit Validity",
+        "e0_mean_std": "1.0000 +/- 0.0000",
+        "e1_mean_std": "0.7281 +/- 0.0000",
+        "winner": "E0",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "spe",
+        "metric": "Unique Ratio",
+        "e0_mean_std": "0.0658 +/- 0.0000",
+        "e1_mean_std": "0.1769 +/- 0.0000",
+        "winner": "E1",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "spe",
+        "metric": "Mode Collapse",
+        "e0_mean_std": "0.2208 +/- 0.0000",
+        "e1_mean_std": "0.1594 +/- 0.0000",
+        "winner": "E1",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "spe",
+        "metric": "Tanimoto Similarity",
+        "e0_mean_std": "0.1400 +/- 0.0000",
+        "e1_mean_std": "0.1081 +/- 0.0000",
+        "winner": "E0",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "spe",
+        "metric": "Scaffold Match",
+        "e0_mean_std": "0.000000 +/- 0.000000",
+        "e1_mean_std": "0.000000 +/- 0.000000",
+        "winner": "tie",
+        "confidence": "N/A"
+      },
+      {
+        "tokenizer": "spe",
+        "metric": "FG-F1",
+        "e0_mean_std": "0.3008 +/- 0.0000",
+        "e1_mean_std": "0.2052 +/- 0.0000",
+        "winner": "E0",
+        "confidence": "low"
+      },
+      {
+        "tokenizer": "spe",
+        "metric": "Avg Char Length",
+        "e0_mean_std": "18.5200 +/- 0.0000",
+        "e1_mean_std": "14.8300 +/- 0.0000",
+        "winner": "E1",
+        "confidence": "low"
+      }
+    ],
+    "condition_shuffle_sensitivity": [
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E0 DirectConcat",
+        "metric": "run_dir",
+        "paired": "?",
+        "shuffled_all": "?",
+        "drop": "?",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E0 DirectConcat",
+        "metric": "split",
+        "paired": "?",
+        "shuffled_all": "?",
+        "drop": "?",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E0 DirectConcat",
+        "metric": "shuffle_seed",
+        "paired": "?",
+        "shuffled_all": "?",
+        "drop": "?",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E0 DirectConcat",
+        "metric": "num_samples",
+        "paired": "?",
+        "shuffled_all": "?",
+        "drop": "?",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E0 DirectConcat",
+        "metric": "modes",
+        "paired": "{'rdkit_validity': 1.0, 'unique_generated': 45, 'unique_ratio': 0.065789, 'canonical_exact_match': 0.0, 'mean_tanimoto': 0.140036, 'mean_tanimoto_valid_only': 0.140036, 'scaffold_match_rate': 0.0, 'mean_fg_f1': 0.300798, 'mode_collapse_score': 0.22076, 'prediction_entropy': 2.7726, 'avg_pred_char_length': 18.52, 'mean_levenshtein': 0.0}",
+        "shuffled_all": "-",
+        "drop": "-",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E0 DirectConcat",
+        "metric": "paired_vs_shuffled_deltas",
+        "paired": "-",
+        "shuffled_all": "-",
+        "drop": "-",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E0 DirectConcat",
+        "metric": "interpretation_notes",
+        "paired": "?",
+        "shuffled_all": "?",
+        "drop": "?",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E1 IntraCross",
+        "metric": "run_dir",
+        "paired": "?",
+        "shuffled_all": "?",
+        "drop": "?",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E1 IntraCross",
+        "metric": "split",
+        "paired": "?",
+        "shuffled_all": "?",
+        "drop": "?",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E1 IntraCross",
+        "metric": "shuffle_seed",
+        "paired": "?",
+        "shuffled_all": "?",
+        "drop": "?",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E1 IntraCross",
+        "metric": "num_samples",
+        "paired": "?",
+        "shuffled_all": "?",
+        "drop": "?",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E1 IntraCross",
+        "metric": "modes",
+        "paired": "{'rdkit_validity': 0.72807, 'unique_generated': 121, 'unique_ratio': 0.176901, 'canonical_exact_match': 0.0, 'mean_tanimoto': 0.108064, 'mean_tanimoto_valid_only': 0.148425, 'scaffold_match_rate': 0.0, 'mean_fg_f1': 0.205173, 'mode_collapse_score': 0.159357, 'prediction_entropy': 3.6945, 'avg_pred_char_length': 14.83, 'mean_levenshtein': 0.0}",
+        "shuffled_all": "-",
+        "drop": "-",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E1 IntraCross",
+        "metric": "paired_vs_shuffled_deltas",
+        "paired": "-",
+        "shuffled_all": "-",
+        "drop": "-",
+        "winner": "?"
+      },
+      {
+        "tokenizer": "spe",
+        "seed": 42,
+        "model": "E1 IntraCross",
+        "metric": "interpretation_notes",
+        "paired": "?",
+        "shuffled_all": "?",
+        "drop": "?",
+        "winner": "?"
+      }
+    ],
+    "architecture_verdict": [
+      {
+        "criterion": "Optimization (loss / token acc)",
+        "e0": "1.4421 +/- 0.0000",
+        "e1": "1.4778 +/- 0.0000",
+        "winner": "E0",
+        "confidence": "low"
+      },
+      {
+        "criterion": "Exact / canonical exact match",
+        "e0": "0.000000 +/- 0.000000",
+        "e1": "0.000000 +/- 0.000000",
+        "winner": "tie",
+        "confidence": "N/A"
+      },
+      {
+        "criterion": "RDKit Validity",
+        "e0": "0.6769 +/- 0.0000",
+        "e1": "0.7208 +/- 0.0000",
+        "winner": "E1",
+        "confidence": "low"
+      },
+      {
+        "criterion": "Diversity (unique ratio / collapse)",
+        "e0": "0.3202 +/- 0.0000",
+        "e1": "0.2412 +/- 0.0000",
+        "winner": "E0",
+        "confidence": "low"
+      },
+      {
+        "criterion": "Target similarity (Tanimoto)",
+        "e0": "0.1037 +/- 0.0000",
+        "e1": "0.1059 +/- 0.0000",
+        "winner": "E1",
+        "confidence": "low"
+      },
+      {
+        "criterion": "Condition sensitivity",
+        "e0": "N/A",
+        "e1": "N/A",
+        "winner": "N/A",
+        "confidence": "N/A"
+      },
+      {
+        "criterion": "Overall",
+        "e0": "",
+        "e1": "",
+        "winner": "E0",
+        "confidence": "medium"
+      }
+    ]
+  },
+  "raw_runs": [
+    {
+      "run_dir": "/data/home/sczc698/run/xxy/Trans-cross/runs/equal_concat_seed42",
+      "seed": 42,
+      "model_type": "concat",
+      "tokenizer_type": "regex_atom",
+      "metrics": {
+        "best_epoch": 20,
+        "best_valid_loss": 1.4323221878571943,
+        "test_loss": 1.44208,
+        "test_token_acc": 0.6108,
+        "test_exact_match": 0.0,
+        "n_params": 1789361
+      },
+      "evaluation_summary_test": {
+        "split": "test",
+        "model_name": "DirectConcatSmilesModel-equal",
+        "tokenizer_type": "regex_atom",
+        "seed": 42,
+        "num_samples": 684,
+        "exact_string_match": 0.0,
+        "canonical_exact_match": 0.0,
+        "rdkit_validity": 0.676901,
+        "unique_generated": 219,
+        "unique_valid_generated": 101,
+        "unique_ratio": 0.320175,
+        "valid_unique_ratio": 0.218143,
+        "mode_collapse_score": 0.077485,
+        "prediction_entropy": 4.6191,
+        "avg_pred_char_length": 51.91,
+        "avg_target_char_length": 18.19,
+        "mean_tanimoto": 0.103725,
+        "mean_tanimoto_valid_only": 0.153235,
+        "scaffold_match_rate": 0.0,
+        "mean_fg_precision": 0.187865,
+        "mean_fg_recall": 0.239181,
+        "mean_fg_f1": 0.188215,
+        "mean_levenshtein": 46.43,
+        "target_length_stats": {
+          "mean": 18.19,
+          "min": 3,
+          "max": 66,
+          "p50": 16,
+          "p90": 31,
+          "p95": 36,
+          "p99": 45
+        },
+        "pred_length_stats": {
+          "mean": 51.91,
+          "min": 9,
+          "max": 160,
+          "p50": 22,
+          "p90": 160,
+          "p95": 160,
+          "p99": 160
+        },
+        "target_length_dist": {
+          "12-17": 195,
+          "6-11": 163,
+          "18-23": 139,
+          "30-35": 46,
+          "24-29": 86,
+          "36-41": 27,
+          "48-53": 2,
+          "42-47": 9,
+          "0-5": 16,
+          "66-71": 1
+        },
+        "pred_length_dist": {
+          "30-44": 34,
+          "150-164": 118,
+          "45-59": 6,
+          "15-29": 374,
+          "60-74": 55,
+          "0-14": 60,
+          "75-89": 22,
+          "90-104": 9,
+          "120-134": 4,
+          "135-149": 2
+        },
+        "top_20_predictions": [
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "count": 53,
+            "fraction": 0.0775
+          },
+          {
+            "smiles": "CC(C)(C)c1ccc(C)cc1",
+            "count": 50,
+            "fraction": 0.0731
+          },
+          {
+            "smiles": "CC1CCCCC1",
+            "count": 31,
+            "fraction": 0.0453
+          },
+          {
+            "smiles": "O=C(O)Cc1ccccc1",
+            "count": 26,
+            "fraction": 0.038
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1ccccc1",
+            "count": 24,
+            "fraction": 0.0351
+          },
+          {
+            "smiles": "O=C(O)c1ccccc1Cl",
+            "count": 24,
+            "fraction": 0.0351
+          },
+          {
+            "smiles": "CC(=O)c1ccccc1C(C)C",
+            "count": 15,
+            "fraction": 0.0219
+          },
+          {
+            "smiles": "CCCCCCCCCCCC(=O)c1ccccc1",
+            "count": 14,
+            "fraction": 0.0205
+          },
+          {
+            "smiles": "CC(=O)c1ccccc1",
+            "count": 13,
+            "fraction": 0.019
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCc1ccccc1",
+            "count": 11,
+            "fraction": 0.0161
+          },
+          {
+            "smiles": "O=C(c1ccccc1)c1ccccc1",
+            "count": 10,
+            "fraction": 0.0146
+          },
+          {
+            "smiles": "O=C(O)c1ccccc1C(F)(F)F",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "Cc1ccc(C)c(C)c1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "O=C(O)c1ccc(Cl)cc1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "CC(C)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC(=O)c1cccc(=O)OC)c1cc1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCc1ccccc1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1ccc1cccccccccc1",
+            "count": 7,
+            "fraction": 0.0102
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCC(=OCC)CCCC1)cc1",
+            "count": 7,
+            "fraction": 0.0102
+          },
+          {
+            "smiles": "CCOC(=O)c1ccc(OC)c(C)c1",
+            "count": 7,
+            "fraction": 0.0102
+          },
+          {
+            "smiles": "CC(C)CCCCCCC(=O)c1ccccc1",
+            "count": 6,
+            "fraction": 0.0088
+          }
+        ],
+        "validity_by_length": {
+          "0-29": {
+            "count": 434,
+            "valid": 400,
+            "rate": 0.9216589861751152
+          },
+          "30-59": {
+            "count": 40,
+            "valid": 1,
+            "rate": 0.025
+          },
+          "60-89": {
+            "count": 77,
+            "valid": 0,
+            "rate": 0.0
+          },
+          "90-119": {
+            "count": 9,
+            "valid": 0,
+            "rate": 0.0
+          },
+          "120-149": {
+            "count": 6,
+            "valid": 1,
+            "rate": 0.16666666666666666
+          },
+          "150-179": {
+            "count": 118,
+            "valid": 61,
+            "rate": 0.5169491525423728
+          }
+        },
+        "tanimoto_by_length": {
+          "0-29": {
+            "count": 434,
+            "mean_tanimoto": 0.12140902873870384
+          },
+          "30-59": {
+            "count": 40,
+            "mean_tanimoto": 0.007142857142857143
+          },
+          "60-89": {
+            "count": 77,
+            "mean_tanimoto": 0.0
+          },
+          "90-119": {
+            "count": 9,
+            "mean_tanimoto": 0.0
+          },
+          "120-149": {
+            "count": 6,
+            "mean_tanimoto": 0.036036036036036036
+          },
+          "150-179": {
+            "count": 118,
+            "mean_tanimoto": 0.1504612345184494
+          }
+        },
+        "teacher_forcing_loss": 1.44208,
+        "teacher_forcing_token_accuracy": 0.610826,
+        "pct_ending_with_eos": 83.04,
+        "pct_hitting_max_len": 16.96,
+        "examples": [
+          {
+            "target": "C[C@@H](N)CO",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1ccccc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CCCC(CC)CO",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.2
+          },
+          {
+            "target": "c1ccc(CN2CCNCC2)cc1",
+            "predicted": "CC(=O)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1cccccc1c(=O)=O",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "O=C(Cc1ccc(-c2ccccc2)cc1)c1ccccc1",
+            "predicted": "O=C(O)c1ccccc1C(F)(F)F",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.243243
+          },
+          {
+            "target": "C(=Nc1ccccc1)c1ccc2c(c1)OCO2",
+            "predicted": "Oc1ccc(C(O)c2ccccc2)c1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C#CCCCCCCCCCO",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCCCCCCCCCCCC1)cc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C#CCCCCCCCCC(=O)O",
+            "predicted": "CCOC(=O)C1CCCCC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.135135
+          },
+          {
+            "target": "O=C1C=C(Nc2ccccc2)c2ccccc2C1=O",
+            "predicted": "O=C(O)c1ccccc1Cl",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.184211
+          },
+          {
+            "target": "CCC/C=C/C(=O)OCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCC(=OCCCC)c1cccc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "Cn1c(=O)sc2ccccc21",
+            "predicted": "CC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.21875
+          },
+          {
+            "target": "c1ccc(Cc2cnccn2)cc1",
+            "predicted": "Cc1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.103448
+          },
+          {
+            "target": "CCC(N)C(=O)O",
+            "predicted": "CC(C)CCCCCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.189189
+          },
+          {
+            "target": "C1CC2OC2C1",
+            "predicted": "CC1CCCCC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.222222
+          },
+          {
+            "target": "C1CCC2OC2C1",
+            "predicted": "CC1CCCCC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.294118
+          },
+          {
+            "target": "C1CCC2OC2CC1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1CCCCCCCCCCCCCCCCCCCCCCCC1CCCCCCCCCCCCCCCCCCCCCCCCCCCCC1CCCCCC1CCCCCCCCCCCCCC1CCCCCCC1CCCCCCCCCCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C1CCCC2OC2CC1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1ccccccc1cccccc1CCCCCCCCCCCCCCCCCCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CCCCCCCCCCCCCCCCCCC#N",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1CCCCCCCCCCCCCCC",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CCCCCCCCCCCCCN",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.615385
+          },
+          {
+            "target": "C(/C=C/c1ccccc1)=C1c2ccccc2-c2ccccc21",
+            "predicted": "O=C(O)c1ccccc1C(F)(F)F",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.162162
+          },
+          {
+            "target": "C=C(C)CN",
+            "predicted": "CC(=O)C(C)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.107143
+          }
+        ],
+        "failure_cases": [
+          {
+            "target": "C[C@@H](N)CO",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1ccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 40
+          },
+          {
+            "target": "c1ccc(CN2CCNCC2)cc1",
+            "predicted": "CC(=O)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1cccccc1c(=O)=O",
+            "tanimoto": 0.0,
+            "levenshtein": 50
+          },
+          {
+            "target": "C(=Nc1ccccc1)c1ccc2c(c1)OCO2",
+            "predicted": "Oc1ccc(C(O)c2ccccc2)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 16
+          },
+          {
+            "target": "C#CCCCCCCCCCO",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCCCCCCCCCCCC1)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 52
+          },
+          {
+            "target": "CCC/C=C/C(=O)OCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCC(=OCCCC)c1cccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 53
+          },
+          {
+            "target": "C1CCC2OC2CC1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1CCCCCCCCCCCCCCCCCCCCCCCC1CCCCCCCCCCCCCCCCCCCCCCCCCCCCC1CCCCCC1CCCCCCCCCCCCCC1CCCCCCC1CCCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 151
+          },
+          {
+            "target": "C1CCCC2OC2CC1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1ccccccc1cccccc1CCCCCCCCCCCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 150
+          },
+          {
+            "target": "CCCCCCCCCCCCCCCCCCC#N",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1CCCCCCCCCCCCCCC",
+            "tanimoto": 0.0,
+            "levenshtein": 141
+          },
+          {
+            "target": "C=CCC(O)CC=C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1ccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 36
+          },
+          {
+            "target": "C1CC2OC2CCC2OC12",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCccc1ccc1C(CCCC)C)ccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 52
+          },
+          {
+            "target": "CC(O)CCC(C)O",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCC(=OCC)CCCCCCc1ccccccc1cccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 69
+          },
+          {
+            "target": "CCCCCCCCCCCC(=O)N(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCCCCCCCCCCCCCCcc1cccccccccc1OCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 145
+          },
+          {
+            "target": "CCCCCCCCCC(=O)OCCCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCC(CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "tanimoto": 0.0,
+            "levenshtein": 145
+          },
+          {
+            "target": "CCCCCCCCC(=O)CCCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1CCCCCCCCCCCCCCC",
+            "tanimoto": 0.0,
+            "levenshtein": 147
+          },
+          {
+            "target": "CCCC[N+](CCCC)(CCCC)CCCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCCccccc1cccc1ccc1cccccccccc1cc1c1cc1ccc1cccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 78
+          },
+          {
+            "target": "c1ccc(CC2CCNCC2)cc1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCccccc1cccccc1cccccccc1ccc1cccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 85
+          },
+          {
+            "target": "CC(=O)CCCCC(=O)O",
+            "predicted": "CCOC(=O)C(=O)CC1CCCCCCCCCCC",
+            "tanimoto": 0.0,
+            "levenshtein": 16
+          },
+          {
+            "target": "CCCCCCCCCC(=O)CCCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1ccccccc1cccccc1CCCCCCC1CCCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 146
+          },
+          {
+            "target": "CCCC(=O)CCC(C)=O",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCCCCCCCCCCCCCCcc1cccccccccc1OCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 150
+          },
+          {
+            "target": "C=CCC(O)C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1cccccccccc1cc1CCCCCCCC(=OCCC(=O)ccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 93
+          }
+        ]
+      },
+      "evaluation_summary_valid": {
+        "split": "valid",
+        "model_name": "DirectConcatSmilesModel-equal",
+        "tokenizer_type": "regex_atom",
+        "seed": 42,
+        "num_samples": 684,
+        "exact_string_match": 0.0,
+        "canonical_exact_match": 0.0,
+        "rdkit_validity": 0.669591,
+        "unique_generated": 218,
+        "unique_valid_generated": 93,
+        "unique_ratio": 0.318713,
+        "valid_unique_ratio": 0.203057,
+        "mode_collapse_score": 0.074561,
+        "prediction_entropy": 4.6069,
+        "avg_pred_char_length": 55.29,
+        "avg_target_char_length": 18.81,
+        "mean_tanimoto": 0.108549,
+        "mean_tanimoto_valid_only": 0.162112,
+        "scaffold_match_rate": 0.0,
+        "mean_fg_precision": 0.176827,
+        "mean_fg_recall": 0.235112,
+        "mean_fg_f1": 0.172665,
+        "mean_levenshtein": 49.5,
+        "target_length_stats": {
+          "mean": 18.81,
+          "min": 3,
+          "max": 61,
+          "p50": 17,
+          "p90": 31,
+          "p95": 35,
+          "p99": 48
+        },
+        "pred_length_stats": {
+          "mean": 55.29,
+          "min": 9,
+          "max": 160,
+          "p50": 23,
+          "p90": 160,
+          "p95": 160,
+          "p99": 160
+        },
+        "target_length_dist": {
+          "15-19": 156,
+          "20-24": 112,
+          "25-29": 65,
+          "5-9": 80,
+          "10-14": 169,
+          "30-34": 59,
+          "45-49": 4,
+          "40-44": 14,
+          "0-4": 8,
+          "35-39": 12,
+          "55-59": 1,
+          "60-64": 1,
+          "50-54": 3
+        },
+        "pred_length_dist": {
+          "60-74": 60,
+          "15-29": 344,
+          "75-89": 31,
+          "0-14": 56,
+          "30-44": 44,
+          "150-164": 125,
+          "135-149": 4,
+          "90-104": 9,
+          "45-59": 6,
+          "120-134": 4,
+          "105-119": 1
+        },
+        "top_20_predictions": [
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "count": 51,
+            "fraction": 0.0746
+          },
+          {
+            "smiles": "CC(C)(C)c1ccc(C)cc1",
+            "count": 46,
+            "fraction": 0.0673
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1ccccc1",
+            "count": 31,
+            "fraction": 0.0453
+          },
+          {
+            "smiles": "CC1CCCCC1",
+            "count": 22,
+            "fraction": 0.0322
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCc1ccccc1",
+            "count": 21,
+            "fraction": 0.0307
+          },
+          {
+            "smiles": "O=C(O)c1ccccc1Cl",
+            "count": 20,
+            "fraction": 0.0292
+          },
+          {
+            "smiles": "O=C(O)Cc1ccccc1",
+            "count": 18,
+            "fraction": 0.0263
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "count": 16,
+            "fraction": 0.0234
+          },
+          {
+            "smiles": "CC(=O)c1ccccc1C(C)C",
+            "count": 14,
+            "fraction": 0.0205
+          },
+          {
+            "smiles": "CC(=O)c1ccccc1",
+            "count": 11,
+            "fraction": 0.0161
+          },
+          {
+            "smiles": "O=C(O)c1ccccc1C(F)(F)F",
+            "count": 11,
+            "fraction": 0.0161
+          },
+          {
+            "smiles": "O=C(O)c1ccc(O)cc1",
+            "count": 11,
+            "fraction": 0.0161
+          },
+          {
+            "smiles": "O=C(c1ccccc1)c1ccccc1",
+            "count": 11,
+            "fraction": 0.0161
+          },
+          {
+            "smiles": "Cc1ccc(C)cc1",
+            "count": 10,
+            "fraction": 0.0146
+          },
+          {
+            "smiles": "CCCCCCCCCCCC(=O)c1ccccc1",
+            "count": 10,
+            "fraction": 0.0146
+          },
+          {
+            "smiles": "CC(=O)c1ccc(C(=O)O)cc1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1CCCCCCCCCCCCCCC",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "CC(C)CCCCCCC(=O)c1ccccc1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "O=C(O)c1ccccc1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "CC(C)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC(=O)c1cccc(=O)OC)c1cc1",
+            "count": 7,
+            "fraction": 0.0102
+          }
+        ],
+        "validity_by_length": {
+          "0-29": {
+            "count": 400,
+            "valid": 381,
+            "rate": 0.9525
+          },
+          "30-59": {
+            "count": 50,
+            "valid": 3,
+            "rate": 0.06
+          },
+          "60-89": {
+            "count": 91,
+            "valid": 0,
+            "rate": 0.0
+          },
+          "90-119": {
+            "count": 10,
+            "valid": 0,
+            "rate": 0.0
+          },
+          "120-149": {
+            "count": 8,
+            "valid": 4,
+            "rate": 0.5
+          },
+          "150-179": {
+            "count": 125,
+            "valid": 70,
+            "rate": 0.56
+          }
+        },
+        "tanimoto_by_length": {
+          "0-29": {
+            "count": 400,
+            "mean_tanimoto": 0.12666449708489422
+          },
+          "30-59": {
+            "count": 50,
+            "mean_tanimoto": 0.013379790940766552
+          },
+          "60-89": {
+            "count": 91,
+            "mean_tanimoto": 0.0
+          },
+          "90-119": {
+            "count": 10,
+            "mean_tanimoto": 0.0
+          },
+          "120-149": {
+            "count": 8,
+            "mean_tanimoto": 0.11453554896759766
+          },
+          "150-179": {
+            "count": 125,
+            "mean_tanimoto": 0.1759701021442631
+          }
+        },
+        "teacher_forcing_loss": 1.432322,
+        "teacher_forcing_token_accuracy": 0.617541,
+        "pct_ending_with_eos": 81.87,
+        "pct_hitting_max_len": 18.13,
+        "examples": [
+          {
+            "target": "C=C(CC)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCccc1ccc(=OCC(=O)OC)c1cc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "Cn1c(=O)oc(=O)c2ccccc21",
+            "predicted": "CC(=O)c1ccccc1C(C)C(=O)O",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.162791
+          },
+          {
+            "target": "CC(=O)OC/C=C(\\C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.046512
+          },
+          {
+            "target": "C=CCCl",
+            "predicted": "CC(C)CCCCCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.027778
+          },
+          {
+            "target": "C#CCO",
+            "predicted": "CC(=O)c1ccc(C(=O)OC)c1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CCCCCl",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1ccccc1C(CC(=O)CCC)CCCCCCCCCCCCCC)ccccccc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "NCCCCN",
+            "predicted": "O=C(O)Cc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.043478
+          },
+          {
+            "target": "C1=CCCC=CCC1",
+            "predicted": "Cc1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.076923
+          },
+          {
+            "target": "CCCCNCCCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1ccccc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "c1ccc(CNCC2CC2)cc1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1cccccc1ccc(=OCC(=O)OC)c1cc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C=CC(=C)CCC=C(C)C",
+            "predicted": "CC(C)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1ccc(=O)=O)(C)cc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CC(C)(CO)CO",
+            "predicted": "CC(C)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC(=O)c1cccc(=O)OC)c1cc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CCCCOP(=O)(OCCCC)OCCCC",
+            "predicted": "CC(C)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC(CC(=O)=O)c1cc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CC(=O)N(C)C",
+            "predicted": "CC(=O)c1ccc(C(=O)O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.227273
+          },
+          {
+            "target": "c1ccc(CNC2CC2)cc1",
+            "predicted": "CCCCCCCCCCCCCc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.28125
+          },
+          {
+            "target": "CC(=O)OCCC(C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCCc1ccccCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCccccc1cccccccccccc1ccccccc1ccc1c1ccc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CC(=O)OCC#CCOC(C)=O",
+            "predicted": "CC(C)(C)c1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.033333
+          },
+          {
+            "target": "CC(C)C(=O)OC(C)(C)C",
+            "predicted": "CC(C)(C)c1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.103448
+          },
+          {
+            "target": "CCCC(O)P(=O)(OCC)OCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1ccccc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C/C=C/C(=O)OC(C)C",
+            "predicted": "CC(C)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC(=O)c1cccc(=O)OC)c1cc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          }
+        ],
+        "failure_cases": [
+          {
+            "target": "C=C(CC)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCccc1ccc(=OCC(=O)OC)c1cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 52
+          },
+          {
+            "target": "C#CCO",
+            "predicted": "CC(=O)c1ccc(C(=O)OC)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 19
+          },
+          {
+            "target": "CCCCCl",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1ccccc1C(CC(=O)CCC)CCCCCCCCCCCCCC)ccccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 78
+          },
+          {
+            "target": "CCCCNCCCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1ccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 35
+          },
+          {
+            "target": "c1ccc(CNCC2CC2)cc1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1cccccc1ccc(=OCC(=O)OC)c1cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 52
+          },
+          {
+            "target": "C=CC(=C)CCC=C(C)C",
+            "predicted": "CC(C)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1ccc(=O)=O)(C)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 49
+          },
+          {
+            "target": "CC(C)(CO)CO",
+            "predicted": "CC(C)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC(=O)c1cccc(=O)OC)c1cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 55
+          },
+          {
+            "target": "CCCCOP(=O)(OCCCC)OCCCC",
+            "predicted": "CC(C)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC(CC(=O)=O)c1cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 52
+          },
+          {
+            "target": "CC(=O)OCCC(C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCCc1ccccCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCccccc1cccccccccccc1ccccccc1ccc1c1ccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 142
+          },
+          {
+            "target": "CCCC(O)P(=O)(OCC)OCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1ccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 35
+          },
+          {
+            "target": "C/C=C/C(=O)OC(C)C",
+            "predicted": "CC(C)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC(=O)c1cccc(=O)OC)c1cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 53
+          },
+          {
+            "target": "C=CC(C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1ccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 33
+          },
+          {
+            "target": "C/C=C(/C)CCC=C(C)C",
+            "predicted": "CC(C)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1ccc(=O)=O)(C)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 49
+          },
+          {
+            "target": "CCC(C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCccc1ccc(=OCC(=O)OC)c1cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 52
+          },
+          {
+            "target": "CCCCOc1ccc(OCCCN2CCOCC2)cc1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCCc1cccccccc1ccc1cccccccccc1OCCCCCCCCCC(=OCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "tanimoto": 0.0,
+            "levenshtein": 141
+          },
+          {
+            "target": "CCCCC(CC)COP(=O)(OCC(CC)CCCC)OCC(CC)CCCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1ccccc1C(CC(=O)CCC)C)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 38
+          },
+          {
+            "target": "CC1(C)OCC(CO)O1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCOCC(=OCC)CCCCCCcc1cccccccccc1cccc1cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 73
+          },
+          {
+            "target": "c1ccc(-c2cccnc2)cc1",
+            "predicted": "Cc1ccc(N)cc1C(=O)cc1cccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 13
+          },
+          {
+            "target": "C1CCC(NC2CCCCC2)CC1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcc1ccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 30
+          },
+          {
+            "target": "c1ccc(Nc2ccc(NC3CCCCC3)cc2)cc1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCcccccc1CC(=OCCCCCCCCCCCCCCCCCCCCOCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCccccc1cccccccccccc1ccccccc1ccc1c1cccccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 144
+          }
+        ]
+      },
+      "parameter_count": {
+        "model_name": "DirectConcatSmilesModel-equal",
+        "total_params": 1789361,
+        "by_module": {
+          "ir_tokenizer": 12032,
+          "h1_tokenizer": 11392,
+          "c13_tokenizer": 12800,
+          "ir_mod": 128,
+          "h1_mod": 128,
+          "c13_mod": 128,
+          "encoder_layers": 1189632,
+          "decoder": 562993,
+          "_direct_params": 128
+        }
+      },
+      "config_used": {
+        "model": "concat_equal",
+        "model_name": "DirectConcatSmilesModel-equal",
+        "vocab_size": 49,
+        "n_params": 1789361,
+        "processed_dir": "/data/home/sczc698/run/xxy/Trans-cross/data/processed",
+        "lr": 0.0001,
+        "seed": 42,
+        "batch_size": 32,
+        "epochs": 30,
+        "max_smiles_len": 160,
+        "patch_size": 64,
+        "train_samples": 3195,
+        "valid_samples": 684,
+        "test_samples": 684,
+        "config_file": "configs/smiles_equal_param.yaml",
+        "config_content": {
+          "data": {
+            "processed_dir": "/data/home/sczc698/run/xxy/Trans-cross/data/processed",
+            "max_smiles_len": 160
+          },
+          "tokenizer": {
+            "patch_size": 64,
+            "use_modality_embedding": true,
+            "use_absolute_position_embedding": true,
+            "use_coordinate_encoding": false
+          },
+          "shared": {
+            "d_model": 128,
+            "num_heads": 4,
+            "decoder_layers": 2,
+            "decoder_ffn_dim": 512,
+            "dropout": 0.1,
+            "init_std": 0.02
+          },
+          "e0_concat": {
+            "encoder_layers": 6,
+            "encoder_ffn_dim": 512
+          },
+          "e1_intra_cross": {
+            "intra_layers": 1,
+            "cross_layers": 1,
+            "fusion_layers": 0,
+            "encoder_ffn_dim": 512,
+            "cross_zero_init_out_proj": true
+          },
+          "training": {
+            "epochs": 30,
+            "batch_size": 32,
+            "lr": 0.0001,
+            "weight_decay": 0.0001,
+            "grad_clip": 1.0,
+            "seed": 42
+          },
+          "equality_constraint": {
+            "max_relative_param_diff": 0.01
+          }
+        }
+      },
+      "predictions_test": {
+        "num_rows": 684,
+        "columns": [
+          "idx",
+          "target_smiles",
+          "pred_smiles",
+          "target_len",
+          "pred_len",
+          "exact_match",
+          "canonical_exact_match",
+          "rdkit_valid",
+          "tanimoto",
+          "scaffold_match",
+          "fg_precision",
+          "fg_recall",
+          "fg_f1",
+          "token_accuracy_sample",
+          "levenshtein",
+          "pred_token_length",
+          "eos_hit",
+          "eos_position",
+          "hit_max_len",
+          "split",
+          "model_name",
+          "tokenizer_type",
+          "seed"
+        ]
+      }
+    },
+    {
+      "run_dir": "/data/home/sczc698/run/xxy/Trans-cross/runs/equal_intra_cross_seed42",
+      "seed": 42,
+      "model_type": "intra_cross",
+      "tokenizer_type": "regex_atom",
+      "metrics": {
+        "best_epoch": 9,
+        "best_valid_loss": 1.4421829635446721,
+        "test_loss": 1.477789,
+        "test_token_acc": 0.5768,
+        "test_exact_match": 0.0,
+        "n_params": 1790129
+      },
+      "evaluation_summary_test": {
+        "split": "test",
+        "model_name": "IntraCrossSmilesModel-equal",
+        "tokenizer_type": "regex_atom",
+        "seed": 42,
+        "num_samples": 684,
+        "exact_string_match": 0.0,
+        "canonical_exact_match": 0.0,
+        "rdkit_validity": 0.72076,
+        "unique_generated": 165,
+        "unique_valid_generated": 107,
+        "unique_ratio": 0.241228,
+        "valid_unique_ratio": 0.217039,
+        "mode_collapse_score": 0.049708,
+        "prediction_entropy": 4.5209,
+        "avg_pred_char_length": 24.42,
+        "avg_target_char_length": 18.19,
+        "mean_tanimoto": 0.105935,
+        "mean_tanimoto_valid_only": 0.146977,
+        "scaffold_match_rate": 0.0,
+        "mean_fg_precision": 0.222588,
+        "mean_fg_recall": 0.206823,
+        "mean_fg_f1": 0.197953,
+        "mean_levenshtein": 20.18,
+        "target_length_stats": {
+          "mean": 18.19,
+          "min": 3,
+          "max": 66,
+          "p50": 16,
+          "p90": 31,
+          "p95": 36,
+          "p99": 45
+        },
+        "pred_length_stats": {
+          "mean": 24.42,
+          "min": 9,
+          "max": 160,
+          "p50": 18,
+          "p90": 36,
+          "p95": 60,
+          "p99": 160
+        },
+        "target_length_dist": {
+          "12-17": 195,
+          "6-11": 163,
+          "18-23": 139,
+          "30-35": 46,
+          "24-29": 86,
+          "36-41": 27,
+          "48-53": 2,
+          "42-47": 9,
+          "0-5": 16,
+          "66-71": 1
+        },
+        "pred_length_dist": {
+          "15-29": 469,
+          "0-14": 135,
+          "60-74": 14,
+          "30-44": 23,
+          "150-164": 21,
+          "45-59": 22
+        },
+        "top_20_predictions": [
+          {
+            "smiles": "CC(=O)c1ccccc1C",
+            "count": 34,
+            "fraction": 0.0497
+          },
+          {
+            "smiles": "CCCCCCCC1CCCCC1",
+            "count": 30,
+            "fraction": 0.0439
+          },
+          {
+            "smiles": "CCCCCCCCCC(=O)c1ccccc1",
+            "count": 29,
+            "fraction": 0.0424
+          },
+          {
+            "smiles": "Cc1ccccc1C",
+            "count": 26,
+            "fraction": 0.038
+          },
+          {
+            "smiles": "CCCCCCCCCCCCC1",
+            "count": 26,
+            "fraction": 0.038
+          },
+          {
+            "smiles": "Cc1ccc(C(=O)c2ccccc2)c1",
+            "count": 21,
+            "fraction": 0.0307
+          },
+          {
+            "smiles": "CCCCCCCCCCc1ccccc1",
+            "count": 17,
+            "fraction": 0.0249
+          },
+          {
+            "smiles": "CCCCCCCCCCCC(=O)c1ccccc1",
+            "count": 16,
+            "fraction": 0.0234
+          },
+          {
+            "smiles": "CC(=O)c1ccc(O)cc1",
+            "count": 15,
+            "fraction": 0.0219
+          },
+          {
+            "smiles": "CCCCCCCCCCCC1",
+            "count": 13,
+            "fraction": 0.019
+          },
+          {
+            "smiles": "CCCCCCC1CCCCC1",
+            "count": 13,
+            "fraction": 0.019
+          },
+          {
+            "smiles": "CCCCCCCCC1CCCCCCC1",
+            "count": 12,
+            "fraction": 0.0175
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "count": 11,
+            "fraction": 0.0161
+          },
+          {
+            "smiles": "CC(=O)c1ccc(C(=O)O)cc1",
+            "count": 10,
+            "fraction": 0.0146
+          },
+          {
+            "smiles": "Cc1ccc(C(=O)cc2ccccc2)c1",
+            "count": 10,
+            "fraction": 0.0146
+          },
+          {
+            "smiles": "CC1CCCCCC1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "Cc1ccccc1C(C)c1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "CC(=O)c1ccc(C)cc1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "count": 8,
+            "fraction": 0.0117
+          }
+        ],
+        "validity_by_length": {
+          "0-29": {
+            "count": 604,
+            "valid": 472,
+            "rate": 0.7814569536423841
+          },
+          "30-59": {
+            "count": 45,
+            "valid": 10,
+            "rate": 0.2222222222222222
+          },
+          "60-89": {
+            "count": 14,
+            "valid": 0,
+            "rate": 0.0
+          },
+          "150-179": {
+            "count": 21,
+            "valid": 11,
+            "rate": 0.5238095238095238
+          }
+        },
+        "tanimoto_by_length": {
+          "0-29": {
+            "count": 604,
+            "mean_tanimoto": 0.10838821730363209
+          },
+          "30-59": {
+            "count": 45,
+            "mean_tanimoto": 0.03967950913031004
+          },
+          "60-89": {
+            "count": 14,
+            "mean_tanimoto": 0.0
+          },
+          "150-179": {
+            "count": 21,
+            "mean_tanimoto": 0.24798808412253792
+          }
+        },
+        "teacher_forcing_loss": 1.477789,
+        "teacher_forcing_token_accuracy": 0.576809,
+        "pct_ending_with_eos": 96.93,
+        "pct_hitting_max_len": 3.07,
+        "examples": [
+          {
+            "target": "C[C@@H](N)CO",
+            "predicted": "CCCCCCCCCCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.090909
+          },
+          {
+            "target": "CCCC(CC)CO",
+            "predicted": "CCCCCCCC1CCCCCCCC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.125
+          },
+          {
+            "target": "c1ccc(CN2CCNCC2)cc1",
+            "predicted": "CCCCCCCc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.264706
+          },
+          {
+            "target": "O=C(Cc1ccc(-c2ccccc2)cc1)c1ccccc1",
+            "predicted": "Cc1ccccc1C(Cl)c1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C(=Nc1ccccc1)c1ccc2c(c1)OCO2",
+            "predicted": "Cc1ccccc1C",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.142857
+          },
+          {
+            "target": "C#CCCCCCCCCCO",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)OCCCCCCCCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C#CCCCCCCCCC(=O)O",
+            "predicted": "CCCCCCCCC1=OCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "O=C1C=C(Nc2ccccc2)c2ccccc2C1=O",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)c1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CCC/C=C/C(=O)OCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.153846
+          },
+          {
+            "target": "Cn1c(=O)sc2ccccc21",
+            "predicted": "CC(=O)CCc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.189189
+          },
+          {
+            "target": "c1ccc(Cc2cnccn2)cc1",
+            "predicted": "CC(=O)c1ccccc1C",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.131579
+          },
+          {
+            "target": "CCC(N)C(=O)O",
+            "predicted": "CCCCCCCCCCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.205882
+          },
+          {
+            "target": "C1CC2OC2C1",
+            "predicted": "CCCCCCCc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C1CCC2OC2C1",
+            "predicted": "CC1CCCCCC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.294118
+          },
+          {
+            "target": "C1CCC2OC2CC1",
+            "predicted": "CCCCCCC1CCCCCC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.230769
+          },
+          {
+            "target": "C1CCCC2OC2CC1",
+            "predicted": "CCCCCCCC1CCCCC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.230769
+          },
+          {
+            "target": "CCCCCCCCCCCCCCCCCCC#N",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.5
+          },
+          {
+            "target": "CCCCCCCCCCCCCN",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)c1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C(/C=C/c1ccccc1)=C1c2ccccc2-c2ccccc21",
+            "predicted": "Cc1ccc2ccccc2c12cccc12",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C=C(C)CN",
+            "predicted": "CC(C)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.041667
+          }
+        ],
+        "failure_cases": [
+          {
+            "target": "O=C(Cc1ccc(-c2ccccc2)cc1)c1ccccc1",
+            "predicted": "Cc1ccccc1C(Cl)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 22
+          },
+          {
+            "target": "C#CCCCCCCCCCO",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)OCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 48
+          },
+          {
+            "target": "C#CCCCCCCCCC(=O)O",
+            "predicted": "CCCCCCCCC1=OCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 9
+          },
+          {
+            "target": "O=C1C=C(Nc2ccccc2)c2ccccc2C1=O",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 18
+          },
+          {
+            "target": "CCCCCCCCCCCCCN",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 35
+          },
+          {
+            "target": "C(/C=C/c1ccccc1)=C1c2ccccc2-c2ccccc21",
+            "predicted": "Cc1ccc2ccccc2c12cccc12",
+            "tanimoto": 0.0,
+            "levenshtein": 18
+          },
+          {
+            "target": "C1CC2OC2CCC2OC12",
+            "predicted": "CCCCCCCCC1CCCCCCCC",
+            "tanimoto": 0.0,
+            "levenshtein": 10
+          },
+          {
+            "target": "CCCCCCCCCCCC(=O)N(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "tanimoto": 0.0,
+            "levenshtein": 145
+          },
+          {
+            "target": "O=P(Oc1ccccc1)(Oc1ccccc1)c1ccccc1",
+            "predicted": "Cc1ccccc1C(C)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 21
+          },
+          {
+            "target": "CCCCCCCCCC(=O)OCCCC",
+            "predicted": "CCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 6
+          },
+          {
+            "target": "CCCCCCCCC(=O)CCCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 47
+          },
+          {
+            "target": "O=S(=O)(Cc1ccccc1)c1ccccc1",
+            "predicted": "Cc1ccccc1C(C(=O)c1cccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 15
+          },
+          {
+            "target": "CC(=O)CCCCC(=O)O",
+            "predicted": "CCCCCCCOC1=OCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 12
+          },
+          {
+            "target": "Cc1ccc(S(=O)(=O)CC(=O)c2ccccc2)cc1",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 11
+          },
+          {
+            "target": "COc1ccc(COC(=O)Oc2ccccc2)cc1",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 5
+          },
+          {
+            "target": "c1ccc(-c2ccc([Si](c3ccccc3)(c3ccccc3)c3ccccc3)cc2)cc1",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 36
+          },
+          {
+            "target": "CCCCCCCCCC(=O)CCCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 46
+          },
+          {
+            "target": "CCCC(=O)CCC(C)=O",
+            "predicted": "CCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 8
+          },
+          {
+            "target": "CCCCCCC(=O)CCCC",
+            "predicted": "CCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 5
+          },
+          {
+            "target": "c1ccc(-c2csc(-c3ccccc3)c2)cc1",
+            "predicted": "Cc1ccccc1C(C)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 19
+          }
+        ]
+      },
+      "evaluation_summary_valid": {
+        "split": "valid",
+        "model_name": "IntraCrossSmilesModel-equal",
+        "tokenizer_type": "regex_atom",
+        "seed": 42,
+        "num_samples": 684,
+        "exact_string_match": 0.0,
+        "canonical_exact_match": 0.0,
+        "rdkit_validity": 0.608187,
+        "unique_generated": 172,
+        "unique_valid_generated": 99,
+        "unique_ratio": 0.251462,
+        "valid_unique_ratio": 0.237981,
+        "mode_collapse_score": 0.05848,
+        "prediction_entropy": 4.5061,
+        "avg_pred_char_length": 32.46,
+        "avg_target_char_length": 18.81,
+        "mean_tanimoto": 0.097937,
+        "mean_tanimoto_valid_only": 0.161031,
+        "scaffold_match_rate": 0.0,
+        "mean_fg_precision": 0.206262,
+        "mean_fg_recall": 0.18806,
+        "mean_fg_f1": 0.180659,
+        "mean_levenshtein": 27.65,
+        "target_length_stats": {
+          "mean": 18.81,
+          "min": 3,
+          "max": 61,
+          "p50": 17,
+          "p90": 31,
+          "p95": 35,
+          "p99": 48
+        },
+        "pred_length_stats": {
+          "mean": 32.46,
+          "min": 9,
+          "max": 160,
+          "p50": 18,
+          "p90": 60,
+          "p95": 160,
+          "p99": 160
+        },
+        "target_length_dist": {
+          "15-19": 156,
+          "20-24": 112,
+          "25-29": 65,
+          "5-9": 80,
+          "10-14": 169,
+          "30-34": 59,
+          "45-49": 4,
+          "40-44": 14,
+          "0-4": 8,
+          "35-39": 12,
+          "55-59": 1,
+          "60-64": 1,
+          "50-54": 3
+        },
+        "pred_length_dist": {
+          "15-29": 382,
+          "45-59": 32,
+          "0-14": 154,
+          "60-74": 39,
+          "120-134": 1,
+          "150-164": 46,
+          "30-44": 27,
+          "135-149": 1,
+          "90-104": 2
+        },
+        "top_20_predictions": [
+          {
+            "smiles": "CCCCCCCCCCCCC1",
+            "count": 40,
+            "fraction": 0.0585
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+            "count": 27,
+            "fraction": 0.0395
+          },
+          {
+            "smiles": "CC(=O)c1ccccc1C",
+            "count": 26,
+            "fraction": 0.038
+          },
+          {
+            "smiles": "CC(=O)c1ccc(O)cc1",
+            "count": 24,
+            "fraction": 0.0351
+          },
+          {
+            "smiles": "CCCCCCCCCCCC1",
+            "count": 23,
+            "fraction": 0.0336
+          },
+          {
+            "smiles": "Cc1ccc(C(=O)c2ccccc2)c1",
+            "count": 20,
+            "fraction": 0.0292
+          },
+          {
+            "smiles": "CCCCCCCCOc1ccccc1",
+            "count": 18,
+            "fraction": 0.0263
+          },
+          {
+            "smiles": "Cc1ccccc1C",
+            "count": 18,
+            "fraction": 0.0263
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1",
+            "count": 17,
+            "fraction": 0.0249
+          },
+          {
+            "smiles": "CCCCCCCCCC(=O)c1ccccc1",
+            "count": 16,
+            "fraction": 0.0234
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)OCCCCC1",
+            "count": 15,
+            "fraction": 0.0219
+          },
+          {
+            "smiles": "CCCCCCCCCCCC(=O)c1ccccc1",
+            "count": 13,
+            "fraction": 0.019
+          },
+          {
+            "smiles": "CCCCCCCC1CCCCC1",
+            "count": 12,
+            "fraction": 0.0175
+          },
+          {
+            "smiles": "CCCCCCC1CCCCC1",
+            "count": 12,
+            "fraction": 0.0175
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCc1ccccc1",
+            "count": 11,
+            "fraction": 0.0161
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)OCCCCCCCCCCCC1",
+            "count": 11,
+            "fraction": 0.0161
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1",
+            "count": 11,
+            "fraction": 0.0161
+          },
+          {
+            "smiles": "CC(=O)c1ccc(C(=O)O)cc1",
+            "count": 11,
+            "fraction": 0.0161
+          },
+          {
+            "smiles": "CCCCCCCCCCCCCCCCCc1ccccc1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "CCCCCCCCCCc1ccccc1",
+            "count": 9,
+            "fraction": 0.0132
+          }
+        ],
+        "validity_by_length": {
+          "0-29": {
+            "count": 536,
+            "valid": 384,
+            "rate": 0.7164179104477612
+          },
+          "30-59": {
+            "count": 59,
+            "valid": 4,
+            "rate": 0.06779661016949153
+          },
+          "60-89": {
+            "count": 39,
+            "valid": 1,
+            "rate": 0.02564102564102564
+          },
+          "90-119": {
+            "count": 2,
+            "valid": 0,
+            "rate": 0.0
+          },
+          "120-149": {
+            "count": 2,
+            "valid": 0,
+            "rate": 0.0
+          },
+          "150-179": {
+            "count": 46,
+            "valid": 27,
+            "rate": 0.5869565217391305
+          }
+        },
+        "tanimoto_by_length": {
+          "0-29": {
+            "count": 536,
+            "mean_tanimoto": 0.10092086865679928
+          },
+          "30-59": {
+            "count": 59,
+            "mean_tanimoto": 0.011329644883937215
+          },
+          "60-89": {
+            "count": 39,
+            "mean_tanimoto": 0.006617038875103391
+          },
+          "90-119": {
+            "count": 2,
+            "mean_tanimoto": 0.0
+          },
+          "120-149": {
+            "count": 2,
+            "mean_tanimoto": 0.0
+          },
+          "150-179": {
+            "count": 46,
+            "mean_tanimoto": 0.26019525898320517
+          }
+        },
+        "teacher_forcing_loss": 1.442183,
+        "teacher_forcing_token_accuracy": 0.597637,
+        "pct_ending_with_eos": 93.27,
+        "pct_hitting_max_len": 6.73,
+        "examples": [
+          {
+            "target": "C=C(CC)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.081081
+          },
+          {
+            "target": "Cn1c(=O)oc(=O)c2ccccc21",
+            "predicted": "CC(=O)c1ccccc1O",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.189189
+          },
+          {
+            "target": "CC(=O)OC/C=C(\\C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.046512
+          },
+          {
+            "target": "C=CCCl",
+            "predicted": "CCCCCCCCCCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.030303
+          },
+          {
+            "target": "C#CCO",
+            "predicted": "CC(=O)c1ccc(O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.04
+          },
+          {
+            "target": "CCCCCl",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)OCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "NCCCCN",
+            "predicted": "CC(=O)c1ccccc1C",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C1=CCCC=CCC1",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)c1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CCCCNCCCC",
+            "predicted": "CCCCCCCCCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "c1ccc(CNCC2CC2)cc1",
+            "predicted": "CCCCCCCCCCc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.264706
+          },
+          {
+            "target": "C=CC(=C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.052632
+          },
+          {
+            "target": "CC(C)(CO)CO",
+            "predicted": "CCCCCCCCCCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.09375
+          },
+          {
+            "target": "CCCCOP(=O)(OCCCC)OCCCC",
+            "predicted": "CCCCCCCCCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CC(=O)N(C)C",
+            "predicted": "CC(=O)c1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.227273
+          },
+          {
+            "target": "c1ccc(CNC2CC2)cc1",
+            "predicted": "CC(=O)c1ccccc1C",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.142857
+          },
+          {
+            "target": "CC(=O)OCCC(C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)OCCCCCCCCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CC(=O)OCC#CCOC(C)=O",
+            "predicted": "CC(=O)c1ccc(O)cc1O",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.15625
+          },
+          {
+            "target": "CC(C)C(=O)OC(C)(C)C",
+            "predicted": "CCCCCCCOc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.054054
+          },
+          {
+            "target": "CCCC(O)P(=O)(OCC)OCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1cc1ccccccccccc1ccccccccc1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C/C=C/C(=O)OC(C)C",
+            "predicted": "CCCCCCCCCCCCCc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.026316
+          }
+        ],
+        "failure_cases": [
+          {
+            "target": "CCCCCl",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)OCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 48
+          },
+          {
+            "target": "C1=CCCC=CCC1",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 18
+          },
+          {
+            "target": "CCCCNCCCC",
+            "predicted": "CCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 6
+          },
+          {
+            "target": "CCCCOP(=O)(OCCCC)OCCCC",
+            "predicted": "CCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 11
+          },
+          {
+            "target": "CC(=O)OCCC(C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)OCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 47
+          },
+          {
+            "target": "CCCC(O)P(=O)(OCC)OCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1cc1ccccccccccc1ccccccccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 116
+          },
+          {
+            "target": "CCC(C)CCCC(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1cc1cccccc",
+            "tanimoto": 0.0,
+            "levenshtein": 150
+          },
+          {
+            "target": "CCOC(=O)C(C)(O)P(=O)(OCC)OCC",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1",
+            "tanimoto": 0.0,
+            "levenshtein": 27
+          },
+          {
+            "target": "O=C1Cc2cccc3cccc1c23",
+            "predicted": "Cc1ccccc1C(C)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 13
+          },
+          {
+            "target": "C=CC(C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 50
+          },
+          {
+            "target": "NCCCCCO",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)OCCOCC1c1",
+            "tanimoto": 0.0,
+            "levenshtein": 49
+          },
+          {
+            "target": "C/C=C(/C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 54
+          },
+          {
+            "target": "O=C1Oc2ccccc2C1c1ccccc1",
+            "predicted": "Cc1ccccc1C(C)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 13
+          },
+          {
+            "target": "CCC(C)CCC=C(C)C",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 54
+          },
+          {
+            "target": "CC(CCO)CCCO",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1",
+            "tanimoto": 0.0,
+            "levenshtein": 29
+          },
+          {
+            "target": "O=C1C(c2ccccc2)=C(c2ccccc2)C(c2ccccc2)=C1c1ccccc1",
+            "predicted": "Cc1ccccc1C(C(=O)c1cccc1",
+            "tanimoto": 0.0,
+            "levenshtein": 30
+          },
+          {
+            "target": "C1CC[C@H]2CCCC[C@@H]2C1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1",
+            "tanimoto": 0.0,
+            "levenshtein": 25
+          },
+          {
+            "target": "c1ccc(CN(Cc2ccccc2)Cc2ccccc2)cc1",
+            "predicted": "Cc1ccccc1C(C)c1",
+            "tanimoto": 0.0,
+            "levenshtein": 21
+          },
+          {
+            "target": "CCCCOc1ccc(OCCCN2CCOCC2)cc1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC)OCCCCCCCCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 47
+          },
+          {
+            "target": "c1ccc(C23CC2COc2ccccc23)cc1",
+            "predicted": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc1",
+            "tanimoto": 0.0,
+            "levenshtein": 30
+          }
+        ]
+      },
+      "parameter_count": {
+        "model_name": "IntraCrossSmilesModel-equal",
+        "total_params": 1790129,
+        "by_module": {
+          "ir_tokenizer": 12032,
+          "h1_tokenizer": 11392,
+          "c13_tokenizer": 12800,
+          "ir_mod": 128,
+          "h1_mod": 128,
+          "c13_mod": 128,
+          "ir_intra": 198272,
+          "h1_intra": 198272,
+          "c13_intra": 198272,
+          "ir_cross": 198528,
+          "h1_cross": 198528,
+          "c13_cross": 198528,
+          "decoder": 562993,
+          "_direct_params": 128
+        }
+      },
+      "config_used": {
+        "model": "intra_cross_equal",
+        "model_name": "IntraCrossSmilesModel-equal",
+        "vocab_size": 49,
+        "n_params": 1790129,
+        "processed_dir": "/data/home/sczc698/run/xxy/Trans-cross/data/processed",
+        "lr": 0.0001,
+        "seed": 42,
+        "batch_size": 32,
+        "epochs": 30,
+        "max_smiles_len": 160,
+        "patch_size": 64,
+        "train_samples": 3195,
+        "valid_samples": 684,
+        "test_samples": 684,
+        "config_file": "configs/smiles_equal_param.yaml",
+        "config_content": {
+          "data": {
+            "processed_dir": "/data/home/sczc698/run/xxy/Trans-cross/data/processed",
+            "max_smiles_len": 160
+          },
+          "tokenizer": {
+            "patch_size": 64,
+            "use_modality_embedding": true,
+            "use_absolute_position_embedding": true,
+            "use_coordinate_encoding": false
+          },
+          "shared": {
+            "d_model": 128,
+            "num_heads": 4,
+            "decoder_layers": 2,
+            "decoder_ffn_dim": 512,
+            "dropout": 0.1,
+            "init_std": 0.02
+          },
+          "e0_concat": {
+            "encoder_layers": 6,
+            "encoder_ffn_dim": 512
+          },
+          "e1_intra_cross": {
+            "intra_layers": 1,
+            "cross_layers": 1,
+            "fusion_layers": 0,
+            "encoder_ffn_dim": 512,
+            "cross_zero_init_out_proj": true
+          },
+          "training": {
+            "epochs": 30,
+            "batch_size": 32,
+            "lr": 0.0001,
+            "weight_decay": 0.0001,
+            "grad_clip": 1.0,
+            "seed": 42
+          },
+          "equality_constraint": {
+            "max_relative_param_diff": 0.01
+          }
+        }
+      },
+      "predictions_test": {
+        "num_rows": 684,
+        "columns": [
+          "idx",
+          "target_smiles",
+          "pred_smiles",
+          "target_len",
+          "pred_len",
+          "exact_match",
+          "canonical_exact_match",
+          "rdkit_valid",
+          "tanimoto",
+          "scaffold_match",
+          "fg_precision",
+          "fg_recall",
+          "fg_f1",
+          "token_accuracy_sample",
+          "levenshtein",
+          "pred_token_length",
+          "eos_hit",
+          "eos_position",
+          "hit_max_len",
+          "split",
+          "model_name",
+          "tokenizer_type",
+          "seed"
+        ]
+      }
+    },
+    {
+      "run_dir": "/data/home/sczc698/run/xxy/Trans-cross/runs/spe_equal_concat_seed42",
+      "seed": 42,
+      "model_type": "concat",
+      "tokenizer_type": "spe",
+      "metrics": {
+        "best_epoch": 23,
+        "best_valid_loss": 3.907132148742676,
+        "test_loss": 3.88006,
+        "test_token_acc": 0.1923,
+        "test_exact_match": 0.0,
+        "n_params": 1834368,
+        "tokenizer_type": "spe",
+        "vocab_size": 256
+      },
+      "evaluation_summary_test": {
+        "split": "test",
+        "model_name": "DirectConcatSmilesModel-SPE",
+        "tokenizer_type": "spe",
+        "seed": 42,
+        "num_samples": 684,
+        "exact_string_match": 0.0,
+        "canonical_exact_match": 0.0,
+        "rdkit_validity": 1.0,
+        "unique_generated": 45,
+        "unique_valid_generated": 45,
+        "unique_ratio": 0.065789,
+        "valid_unique_ratio": 0.065789,
+        "mode_collapse_score": 0.22076,
+        "prediction_entropy": 2.7726,
+        "avg_pred_char_length": 18.52,
+        "avg_target_char_length": 18.19,
+        "mean_tanimoto": 0.140036,
+        "mean_tanimoto_valid_only": 0.140036,
+        "scaffold_match_rate": 0.0,
+        "mean_fg_precision": 0.277827,
+        "mean_fg_recall": 0.390058,
+        "mean_fg_f1": 0.300798,
+        "mean_levenshtein": 15.05,
+        "target_length_stats": {
+          "mean": 18.19,
+          "min": 3,
+          "max": 66,
+          "p50": 16,
+          "p90": 31,
+          "p95": 36,
+          "p99": 45
+        },
+        "pred_length_stats": {
+          "mean": 18.52,
+          "min": 8,
+          "max": 33,
+          "p50": 17,
+          "p90": 24,
+          "p95": 25,
+          "p99": 28
+        },
+        "target_length_dist": {
+          "12-17": 195,
+          "6-11": 163,
+          "18-23": 139,
+          "30-35": 46,
+          "24-29": 86,
+          "36-41": 27,
+          "48-53": 2,
+          "42-47": 9,
+          "0-5": 16,
+          "66-71": 1
+        },
+        "pred_length_dist": {
+          "18-19": 127,
+          "16-17": 260,
+          "14-15": 61,
+          "12-13": 19,
+          "28-29": 19,
+          "24-25": 102,
+          "10-11": 8,
+          "8-9": 7,
+          "20-21": 71,
+          "32-33": 4,
+          "26-27": 6
+        },
+        "top_20_predictions": [
+          {
+            "smiles": "CCCC(=O)c1ccccc1",
+            "count": 151,
+            "fraction": 0.2208
+          },
+          {
+            "smiles": "CCCCCCOc1ccc(C)cc1",
+            "count": 90,
+            "fraction": 0.1316
+          },
+          {
+            "smiles": "Cc1ccc(C(=O)O)cc1",
+            "count": 63,
+            "fraction": 0.0921
+          },
+          {
+            "smiles": "Clc1ccc(Cc2ccccc2)cc1",
+            "count": 61,
+            "fraction": 0.0892
+          },
+          {
+            "smiles": "CCCCCCOc1ccccc1",
+            "count": 50,
+            "fraction": 0.0731
+          },
+          {
+            "smiles": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "count": 49,
+            "fraction": 0.0716
+          },
+          {
+            "smiles": "O=C(c1ccccc1)c1ccc(Cl)cc1",
+            "count": 37,
+            "fraction": 0.0541
+          },
+          {
+            "smiles": "Nc1cccc(C(=O)O)c1",
+            "count": 29,
+            "fraction": 0.0424
+          },
+          {
+            "smiles": "O=C(O)Cc1ccc(Cl)cc1",
+            "count": 19,
+            "fraction": 0.0278
+          },
+          {
+            "smiles": "CCOC(=O)c1ccc(C(=O)O)cc1",
+            "count": 14,
+            "fraction": 0.0205
+          },
+          {
+            "smiles": "O=C(O)c1ccc([N+](=O)[O-])cc1",
+            "count": 12,
+            "fraction": 0.0175
+          },
+          {
+            "smiles": "CCCCCc1ccccc1",
+            "count": 10,
+            "fraction": 0.0146
+          },
+          {
+            "smiles": "O=C(CCl)c1ccccc1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "O=C(O)c1ccc(O)cc1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "O=C(O)c1cccc([N+](=O)[O-])c1",
+            "count": 7,
+            "fraction": 0.0102
+          },
+          {
+            "smiles": "NC(Cc1ccccc1)C(=O)OCC",
+            "count": 6,
+            "fraction": 0.0088
+          },
+          {
+            "smiles": "COc1ccc(C(=O)O)cc1",
+            "count": 6,
+            "fraction": 0.0088
+          },
+          {
+            "smiles": "O=C(O)C1=CCCCC1",
+            "count": 5,
+            "fraction": 0.0073
+          },
+          {
+            "smiles": "Cc1ccc(C(=O)c2ccc(O)cc2)cc1",
+            "count": 5,
+            "fraction": 0.0073
+          },
+          {
+            "smiles": "O=C(O)C1=CC1",
+            "count": 4,
+            "fraction": 0.0058
+          }
+        ],
+        "validity_by_length": {
+          "5-9": {
+            "count": 7,
+            "valid": 7,
+            "rate": 1.0
+          },
+          "10-14": {
+            "count": 29,
+            "valid": 29,
+            "rate": 1.0
+          },
+          "15-19": {
+            "count": 446,
+            "valid": 446,
+            "rate": 1.0
+          },
+          "20-24": {
+            "count": 134,
+            "valid": 134,
+            "rate": 1.0
+          },
+          "25-29": {
+            "count": 64,
+            "valid": 64,
+            "rate": 1.0
+          },
+          "30-34": {
+            "count": 4,
+            "valid": 4,
+            "rate": 1.0
+          }
+        },
+        "tanimoto_by_length": {
+          "5-9": {
+            "count": 7,
+            "mean_tanimoto": 0.07503943606428078
+          },
+          "10-14": {
+            "count": 29,
+            "mean_tanimoto": 0.0942486059021618
+          },
+          "15-19": {
+            "count": 446,
+            "mean_tanimoto": 0.14299048930592562
+          },
+          "20-24": {
+            "count": 134,
+            "mean_tanimoto": 0.14042546028710978
+          },
+          "25-29": {
+            "count": 64,
+            "mean_tanimoto": 0.14568743222950772
+          },
+          "30-34": {
+            "count": 4,
+            "mean_tanimoto": 0.15286246612466123
+          }
+        },
+        "teacher_forcing_loss": 3.88006,
+        "teacher_forcing_token_accuracy": 0.192316,
+        "pct_ending_with_eos": 100.0,
+        "pct_hitting_max_len": 0.0,
+        "examples": [
+          {
+            "target": "C[C@@H](N)CO",
+            "predicted": "CCCCCCOc1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.0625
+          },
+          {
+            "target": "CCCC(CC)CO",
+            "predicted": "CCCCCCOc1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.114286
+          },
+          {
+            "target": "c1ccc(CN2CCNCC2)cc1",
+            "predicted": "CCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.189189
+          },
+          {
+            "target": "O=C(Cc1ccc(-c2ccccc2)cc1)c1ccccc1",
+            "predicted": "Nc1cccc(C(=O)O)c1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.285714
+          },
+          {
+            "target": "C(=Nc1ccccc1)c1ccc2c(c1)OCO2",
+            "predicted": "Nc1cccc(C(=O)O)c1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.133333
+          },
+          {
+            "target": "C#CCCCCCCCCCO",
+            "predicted": "CCCCCCOc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.085714
+          },
+          {
+            "target": "C#CCCCCCCCCC(=O)O",
+            "predicted": "O=C(O)C1CCCC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.172414
+          },
+          {
+            "target": "O=C1C=C(Nc2ccccc2)c2ccccc2C1=O",
+            "predicted": "O=C(O)c1ccc([N+](=O)[O-])cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.119048
+          },
+          {
+            "target": "CCC/C=C/C(=O)OCC",
+            "predicted": "CCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.194444
+          },
+          {
+            "target": "Cn1c(=O)sc2ccccc21",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.194444
+          },
+          {
+            "target": "c1ccc(Cc2cnccn2)cc1",
+            "predicted": "O=C(c1ccccc1)c1ccc(Cl)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.157895
+          },
+          {
+            "target": "CCC(N)C(=O)O",
+            "predicted": "CCCCCCOc1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.083333
+          },
+          {
+            "target": "C1CC2OC2C1",
+            "predicted": "ClC1=C=CC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.045455
+          },
+          {
+            "target": "C1CCC2OC2C1",
+            "predicted": "CCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C1CCC2OC2CC1",
+            "predicted": "CCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C1CCCC2OC2CC1",
+            "predicted": "CCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CCCCCCCCCCCCCCCCCCC#N",
+            "predicted": "CCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.121212
+          },
+          {
+            "target": "CCCCCCCCCCCCCN",
+            "predicted": "CCCC(=O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.133333
+          },
+          {
+            "target": "C(/C=C/c1ccccc1)=C1c2ccccc2-c2ccccc21",
+            "predicted": "O=C(c1ccccc1)c1ccc(Cl)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.171429
+          },
+          {
+            "target": "C=C(C)CN",
+            "predicted": "OC1CC=CC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.047619
+          }
+        ],
+        "failure_cases": []
+      },
+      "evaluation_summary_valid": {
+        "split": "valid",
+        "model_name": "DirectConcatSmilesModel-SPE",
+        "tokenizer_type": "spe",
+        "seed": 42,
+        "num_samples": 684,
+        "exact_string_match": 0.0,
+        "canonical_exact_match": 0.0,
+        "rdkit_validity": 1.0,
+        "unique_generated": 48,
+        "unique_valid_generated": 48,
+        "unique_ratio": 0.070175,
+        "valid_unique_ratio": 0.070175,
+        "mode_collapse_score": 0.173977,
+        "prediction_entropy": 2.8286,
+        "avg_pred_char_length": 18.37,
+        "avg_target_char_length": 18.81,
+        "mean_tanimoto": 0.140887,
+        "mean_tanimoto_valid_only": 0.140887,
+        "scaffold_match_rate": 0.0,
+        "mean_fg_precision": 0.273294,
+        "mean_fg_recall": 0.366472,
+        "mean_fg_f1": 0.284334,
+        "mean_levenshtein": 15.68,
+        "target_length_stats": {
+          "mean": 18.81,
+          "min": 3,
+          "max": 61,
+          "p50": 17,
+          "p90": 31,
+          "p95": 35,
+          "p99": 48
+        },
+        "pred_length_stats": {
+          "mean": 18.37,
+          "min": 8,
+          "max": 29,
+          "p50": 18,
+          "p90": 24,
+          "p95": 25,
+          "p99": 28
+        },
+        "target_length_dist": {
+          "15-19": 156,
+          "20-24": 112,
+          "25-29": 65,
+          "5-9": 80,
+          "10-14": 169,
+          "30-34": 59,
+          "45-49": 4,
+          "40-44": 14,
+          "0-4": 8,
+          "35-39": 12,
+          "55-59": 1,
+          "60-64": 1,
+          "50-54": 3
+        },
+        "pred_length_dist": {
+          "18-19": 152,
+          "16-17": 218,
+          "24-25": 101,
+          "28-29": 23,
+          "14-15": 63,
+          "26-27": 6,
+          "12-13": 31,
+          "20-21": 67,
+          "10-11": 11,
+          "8-9": 12
+        },
+        "top_20_predictions": [
+          {
+            "smiles": "CCCCCCOc1ccc(C)cc1",
+            "count": 119,
+            "fraction": 0.174
+          },
+          {
+            "smiles": "CCCC(=O)c1ccccc1",
+            "count": 105,
+            "fraction": 0.1535
+          },
+          {
+            "smiles": "Cc1ccc(C(=O)O)cc1",
+            "count": 66,
+            "fraction": 0.0965
+          },
+          {
+            "smiles": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "count": 58,
+            "fraction": 0.0848
+          },
+          {
+            "smiles": "CCCCCCOc1ccccc1",
+            "count": 58,
+            "fraction": 0.0848
+          },
+          {
+            "smiles": "Clc1ccc(Cc2ccccc2)cc1",
+            "count": 56,
+            "fraction": 0.0819
+          },
+          {
+            "smiles": "Nc1cccc(C(=O)O)c1",
+            "count": 32,
+            "fraction": 0.0468
+          },
+          {
+            "smiles": "O=C(c1ccccc1)c1ccc(Cl)cc1",
+            "count": 28,
+            "fraction": 0.0409
+          },
+          {
+            "smiles": "O=C(O)c1ccc([N+](=O)[O-])cc1",
+            "count": 18,
+            "fraction": 0.0263
+          },
+          {
+            "smiles": "CCCCCc1ccccc1",
+            "count": 13,
+            "fraction": 0.019
+          },
+          {
+            "smiles": "CCOC(=O)c1ccc(C(=O)O)cc1",
+            "count": 13,
+            "fraction": 0.019
+          },
+          {
+            "smiles": "O=C(O)Cc1ccc(Cl)cc1",
+            "count": 12,
+            "fraction": 0.0175
+          },
+          {
+            "smiles": "O=C(O)c1ccc(O)cc1",
+            "count": 10,
+            "fraction": 0.0146
+          },
+          {
+            "smiles": "O=C(O)C1=CC1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "NC(Cc1ccccc1)C(=O)OCC",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "OC1CCCCCC1",
+            "count": 7,
+            "fraction": 0.0102
+          },
+          {
+            "smiles": "NS(=O)(=O)c1ccccc1",
+            "count": 6,
+            "fraction": 0.0088
+          },
+          {
+            "smiles": "Oc1cccc(Br)c1",
+            "count": 5,
+            "fraction": 0.0073
+          },
+          {
+            "smiles": "OC1CCCC1",
+            "count": 5,
+            "fraction": 0.0073
+          },
+          {
+            "smiles": "O=C(CCl)c1ccccc1",
+            "count": 5,
+            "fraction": 0.0073
+          }
+        ],
+        "validity_by_length": {
+          "8-11": {
+            "count": 23,
+            "valid": 23,
+            "rate": 1.0
+          },
+          "12-15": {
+            "count": 94,
+            "valid": 94,
+            "rate": 1.0
+          },
+          "16-19": {
+            "count": 370,
+            "valid": 370,
+            "rate": 1.0
+          },
+          "20-23": {
+            "count": 67,
+            "valid": 67,
+            "rate": 1.0
+          },
+          "24-27": {
+            "count": 107,
+            "valid": 107,
+            "rate": 1.0
+          },
+          "28-31": {
+            "count": 23,
+            "valid": 23,
+            "rate": 1.0
+          }
+        },
+        "tanimoto_by_length": {
+          "8-11": {
+            "count": 23,
+            "mean_tanimoto": 0.05659068279068763
+          },
+          "12-15": {
+            "count": 94,
+            "mean_tanimoto": 0.1864240307182833
+          },
+          "16-19": {
+            "count": 370,
+            "mean_tanimoto": 0.14320827065596123
+          },
+          "20-23": {
+            "count": 67,
+            "mean_tanimoto": 0.13023714486806567
+          },
+          "24-27": {
+            "count": 107,
+            "mean_tanimoto": 0.12725692359547275
+          },
+          "28-31": {
+            "count": 23,
+            "mean_tanimoto": 0.09616996254194385
+          }
+        },
+        "teacher_forcing_loss": 3.907132,
+        "teacher_forcing_token_accuracy": 0.195043,
+        "pct_ending_with_eos": 100.0,
+        "pct_hitting_max_len": 0.0,
+        "examples": [
+          {
+            "target": "C=C(CC)CCC=C(C)C",
+            "predicted": "CCCCCCOc1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.075
+          },
+          {
+            "target": "Cn1c(=O)oc(=O)c2ccccc21",
+            "predicted": "Cc1ccc(C(=O)O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.135135
+          },
+          {
+            "target": "CC(=O)OC/C=C(\\C)CCC=C(C)C",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.097561
+          },
+          {
+            "target": "C=CCCl",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C#CCO",
+            "predicted": "O=C(O)c1ccc([N+](=O)[O-])cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.034483
+          },
+          {
+            "target": "CCCCCl",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.033333
+          },
+          {
+            "target": "NCCCCN",
+            "predicted": "O=C(O)c1ccc([N+](=O)[O-])cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C1=CCCC=CCC1",
+            "predicted": "O=C(c1ccccc1)c1ccc(Cl)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.04
+          },
+          {
+            "target": "CCCCNCCCC",
+            "predicted": "CCCCCCOc1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.206897
+          },
+          {
+            "target": "c1ccc(CNCC2CC2)cc1",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.194444
+          },
+          {
+            "target": "C=CC(=C)CCC=C(C)C",
+            "predicted": "CCCCCCOc1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.04878
+          },
+          {
+            "target": "CC(C)(CO)CO",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.071429
+          },
+          {
+            "target": "CCCCOP(=O)(OCCCC)OCCCC",
+            "predicted": "CCCCCCOc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.258065
+          },
+          {
+            "target": "CC(=O)N(C)C",
+            "predicted": "Cc1ccc(C(=O)c2ccc(N)cc2)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.148148
+          },
+          {
+            "target": "c1ccc(CNC2CC2)cc1",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.205882
+          },
+          {
+            "target": "CC(=O)OCCC(C)CCC=C(C)C",
+            "predicted": "CCCCCCOc1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.086957
+          },
+          {
+            "target": "CC(=O)OCC#CCOC(C)=O",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.125
+          },
+          {
+            "target": "CC(C)C(=O)OC(C)(C)C",
+            "predicted": "Oc1cccc(Br)c1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.030303
+          },
+          {
+            "target": "CCCC(O)P(=O)(OCC)OCC",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.076923
+          },
+          {
+            "target": "C/C=C/C(=O)OC(C)C",
+            "predicted": "CCCCCCOc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.051282
+          }
+        ],
+        "failure_cases": []
+      },
+      "parameter_count": {
+        "model_name": "DirectConcatSmilesModel-SPE",
+        "tokenizer_type": "spe",
+        "vocab_size": 256,
+        "total_params": 1834368,
+        "by_module": {
+          "ir_tokenizer": 12032,
+          "h1_tokenizer": 11392,
+          "c13_tokenizer": 12800,
+          "ir_mod": 128,
+          "h1_mod": 128,
+          "c13_mod": 128,
+          "encoder_layers": 1189632,
+          "decoder": 608000,
+          "_direct_params": 128
+        }
+      },
+      "config_used": {
+        "model": "concat_equal",
+        "model_name": "DirectConcatSmilesModel-SPE",
+        "tokenizer_type": "spe",
+        "vocab_size": 256,
+        "n_params": 1834368,
+        "processed_dir": "/data/home/sczc698/run/xxy/Trans-cross/data/processed",
+        "lr": 0.0001,
+        "seed": 42,
+        "batch_size": 32,
+        "epochs": 30,
+        "max_smiles_len": 96,
+        "patch_size": 64,
+        "d_model": 128,
+        "num_heads": 4,
+        "decoder_layers": 2,
+        "train_samples": 3195,
+        "valid_samples": 684,
+        "test_samples": 684,
+        "config_file": "configs/smiles_spe_equal_param.yaml",
+        "config_content": {
+          "data": {
+            "processed_dir": "/data/home/sczc698/run/xxy/Trans-cross/data/processed",
+            "max_smiles_len": 96
+          },
+          "tokenizer": {
+            "type": "spe",
+            "vocab_path": "/data/home/sczc698/run/xxy/Trans-cross/data/processed/spe_vocab_256.json",
+            "target_vocab_size": 256,
+            "min_frequency": 2,
+            "patch_size": 64,
+            "use_modality_embedding": true,
+            "use_absolute_position_embedding": true
+          },
+          "shared": {
+            "d_model": 128,
+            "num_heads": 4,
+            "decoder_layers": 2,
+            "decoder_ffn_dim": 512,
+            "dropout": 0.1,
+            "init_std": 0.02
+          },
+          "e0_concat": {
+            "encoder_layers": 6,
+            "encoder_ffn_dim": 512
+          },
+          "e1_intra_cross": {
+            "intra_layers": 1,
+            "cross_layers": 1,
+            "fusion_layers": 0,
+            "encoder_ffn_dim": 512,
+            "cross_zero_init_out_proj": true
+          },
+          "training": {
+            "epochs": 30,
+            "batch_size": 32,
+            "lr": 0.0001,
+            "weight_decay": 0.0001,
+            "grad_clip": 1.0,
+            "seed": 42
+          },
+          "equality_constraint": {
+            "max_relative_param_diff": 0.01
+          }
+        }
+      },
+      "predictions_test": {
+        "num_rows": 684,
+        "columns": [
+          "idx",
+          "target_smiles",
+          "pred_smiles",
+          "target_len",
+          "pred_len",
+          "exact_match",
+          "canonical_exact_match",
+          "rdkit_valid",
+          "tanimoto",
+          "scaffold_match",
+          "fg_precision",
+          "fg_recall",
+          "fg_f1",
+          "token_accuracy_sample",
+          "levenshtein",
+          "pred_token_length",
+          "eos_hit",
+          "eos_position",
+          "hit_max_len",
+          "split",
+          "model_name",
+          "tokenizer_type",
+          "seed"
+        ]
+      }
+    },
+    {
+      "run_dir": "/data/home/sczc698/run/xxy/Trans-cross/runs/spe_equal_intra_cross_seed42",
+      "seed": 42,
+      "model_type": "intra_cross",
+      "tokenizer_type": "spe",
+      "metrics": {
+        "best_epoch": 15,
+        "best_valid_loss": 3.9302846518429844,
+        "test_loss": 3.94177,
+        "test_token_acc": 0.1772,
+        "test_exact_match": 0.0,
+        "n_params": 1835136,
+        "tokenizer_type": "spe",
+        "vocab_size": 256
+      },
+      "evaluation_summary_test": {
+        "split": "test",
+        "model_name": "IntraCrossSmilesModel-SPE",
+        "tokenizer_type": "spe",
+        "seed": 42,
+        "num_samples": 684,
+        "exact_string_match": 0.0,
+        "canonical_exact_match": 0.0,
+        "rdkit_validity": 0.72807,
+        "unique_generated": 121,
+        "unique_valid_generated": 95,
+        "unique_ratio": 0.176901,
+        "valid_unique_ratio": 0.190763,
+        "mode_collapse_score": 0.159357,
+        "prediction_entropy": 3.6945,
+        "avg_pred_char_length": 14.83,
+        "avg_target_char_length": 18.19,
+        "mean_tanimoto": 0.108064,
+        "mean_tanimoto_valid_only": 0.148425,
+        "scaffold_match_rate": 0.0,
+        "mean_fg_precision": 0.199683,
+        "mean_fg_recall": 0.261428,
+        "mean_fg_f1": 0.205173,
+        "mean_levenshtein": 13.28,
+        "target_length_stats": {
+          "mean": 18.19,
+          "min": 3,
+          "max": 66,
+          "p50": 16,
+          "p90": 31,
+          "p95": 36,
+          "p99": 45
+        },
+        "pred_length_stats": {
+          "mean": 14.83,
+          "min": 6,
+          "max": 36,
+          "p50": 15,
+          "p90": 25,
+          "p95": 26,
+          "p99": 29
+        },
+        "target_length_dist": {
+          "12-17": 195,
+          "6-11": 163,
+          "18-23": 139,
+          "30-35": 46,
+          "24-29": 86,
+          "36-41": 27,
+          "48-53": 2,
+          "42-47": 9,
+          "0-5": 16,
+          "66-71": 1
+        },
+        "pred_length_dist": {
+          "12-14": 101,
+          "6-8": 158,
+          "15-17": 164,
+          "24-26": 62,
+          "9-11": 82,
+          "21-23": 27,
+          "18-20": 63,
+          "27-29": 22,
+          "30-32": 2,
+          "33-35": 2,
+          "36-38": 1
+        },
+        "top_20_predictions": [
+          {
+            "smiles": "Cc1ccc(C(=O)O)cc1",
+            "count": 109,
+            "fraction": 0.1594
+          },
+          {
+            "smiles": "CCCCCC1",
+            "count": 89,
+            "fraction": 0.1301
+          },
+          {
+            "smiles": "Cc1ccc(CO)cc1",
+            "count": 42,
+            "fraction": 0.0614
+          },
+          {
+            "smiles": "CCCCCCN1",
+            "count": 40,
+            "fraction": 0.0585
+          },
+          {
+            "smiles": "CCCCCC1CC1",
+            "count": 24,
+            "fraction": 0.0351
+          },
+          {
+            "smiles": "O=C(c1ccccc1)c1ccc(Cl)cc1",
+            "count": 20,
+            "fraction": 0.0292
+          },
+          {
+            "smiles": "CCCCCCc1ccc(C)cc1",
+            "count": 18,
+            "fraction": 0.0263
+          },
+          {
+            "smiles": "CCCCCCN(C(=O)O)c1ccc(C)cc1",
+            "count": 17,
+            "fraction": 0.0249
+          },
+          {
+            "smiles": "Clc1ccc(Cc2ccccc2)cc1",
+            "count": 17,
+            "fraction": 0.0249
+          },
+          {
+            "smiles": "CCCCCCCc1ccc(O)cc1",
+            "count": 16,
+            "fraction": 0.0234
+          },
+          {
+            "smiles": "CCCCCCO)cc1",
+            "count": 15,
+            "fraction": 0.0219
+          },
+          {
+            "smiles": "OCc1ccccc1",
+            "count": 12,
+            "fraction": 0.0175
+          },
+          {
+            "smiles": "OC1CC1",
+            "count": 10,
+            "fraction": 0.0146
+          },
+          {
+            "smiles": "ClCc1ccccc1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "Cc1ccc(C(=O)O)cc1C",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "CCCc1ccc(O)cc1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "CCCCCC1CCCCC1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "O=C(O)c1cccc([N+](=O)[O-])c1",
+            "count": 7,
+            "fraction": 0.0102
+          },
+          {
+            "smiles": "CCC1CC1",
+            "count": 7,
+            "fraction": 0.0102
+          }
+        ],
+        "validity_by_length": {
+          "6-11": {
+            "count": 240,
+            "valid": 77,
+            "rate": 0.32083333333333336
+          },
+          "12-17": {
+            "count": 265,
+            "valid": 255,
+            "rate": 0.9622641509433962
+          },
+          "18-23": {
+            "count": 90,
+            "valid": 84,
+            "rate": 0.9333333333333333
+          },
+          "24-29": {
+            "count": 84,
+            "valid": 81,
+            "rate": 0.9642857142857143
+          },
+          "30-35": {
+            "count": 4,
+            "valid": 1,
+            "rate": 0.25
+          },
+          "36-41": {
+            "count": 1,
+            "valid": 0,
+            "rate": 0.0
+          }
+        },
+        "tanimoto_by_length": {
+          "6-11": {
+            "count": 240,
+            "mean_tanimoto": 0.0610221000523548
+          },
+          "12-17": {
+            "count": 265,
+            "mean_tanimoto": 0.11946460906765098
+          },
+          "18-23": {
+            "count": 90,
+            "mean_tanimoto": 0.14988634510275956
+          },
+          "24-29": {
+            "count": 84,
+            "mean_tanimoto": 0.16539739335255643
+          },
+          "30-35": {
+            "count": 4,
+            "mean_tanimoto": 0.057291666666666664
+          },
+          "36-41": {
+            "count": 1,
+            "mean_tanimoto": 0.0
+          }
+        },
+        "teacher_forcing_loss": 3.94177,
+        "teacher_forcing_token_accuracy": 0.177218,
+        "pct_ending_with_eos": 100.0,
+        "pct_hitting_max_len": 0.0,
+        "examples": [
+          {
+            "target": "C[C@@H](N)CO",
+            "predicted": "CCCc1ccc(O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.115385
+          },
+          {
+            "target": "CCCC(CC)CO",
+            "predicted": "CCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "c1ccc(CN2CCNCC2)cc1",
+            "predicted": "Cc1ccc(C(=O)O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.111111
+          },
+          {
+            "target": "O=C(Cc1ccc(-c2ccccc2)cc1)c1ccccc1",
+            "predicted": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.333333
+          },
+          {
+            "target": "C(=Nc1ccccc1)c1ccc2c(c1)OCO2",
+            "predicted": "Oc1cccc(O)c1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.135135
+          },
+          {
+            "target": "C#CCCCCCCCCCO",
+            "predicted": "CCCCCC1CC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.066667
+          },
+          {
+            "target": "C#CCCCCCCCCC(=O)O",
+            "predicted": "Cc1ccc(C(=O)O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.121212
+          },
+          {
+            "target": "O=C1C=C(Nc2ccccc2)c2ccccc2C1=O",
+            "predicted": "Cc1ccc(C(=O)O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.131579
+          },
+          {
+            "target": "CCC/C=C/C(=O)OCC",
+            "predicted": "CCCCCCN1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "Cn1c(=O)sc2ccccc21",
+            "predicted": "O=C(O)c1ccccc1Cl",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.166667
+          },
+          {
+            "target": "c1ccc(Cc2cnccn2)cc1",
+            "predicted": "OC(c1ccccc1)Cc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.264706
+          },
+          {
+            "target": "CCC(N)C(=O)O",
+            "predicted": "CCCCCCN1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C1CC2OC2C1",
+            "predicted": "CCCc1ccc([N+](=O)[O-])cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C1CCC2OC2C1",
+            "predicted": "CCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C1CCC2OC2CC1",
+            "predicted": "CCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C1CCCC2OC2CC1",
+            "predicted": "CCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CCCCCCCCCCCCCCCCCCC#N",
+            "predicted": "CCCCCC1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "CCCCCCCCCCCCCN",
+            "predicted": "CCCCCCc1cc2ccccc2o1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.235294
+          },
+          {
+            "target": "C(/C=C/c1ccccc1)=C1c2ccccc2-c2ccccc21",
+            "predicted": "O=C(c1ccccc1)c1ccc(Cl)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.171429
+          },
+          {
+            "target": "C=C(C)CN",
+            "predicted": "O=C(O)c1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.076923
+          }
+        ],
+        "failure_cases": [
+          {
+            "target": "CCCC(CC)CO",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 4
+          },
+          {
+            "target": "CCC/C=C/C(=O)OCC",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 10
+          },
+          {
+            "target": "CCC(N)C(=O)O",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 8
+          },
+          {
+            "target": "C1CCC2OC2C1",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 4
+          },
+          {
+            "target": "C1CCC2OC2CC1",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 5
+          },
+          {
+            "target": "C1CCCC2OC2CC1",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 6
+          },
+          {
+            "target": "CCCCCCCCCCCCCCCCCCC#N",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 15
+          },
+          {
+            "target": "C=CCC(O)CC=C",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 6
+          },
+          {
+            "target": "CCCCCCCCCCCC(=O)N(C)C",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 15
+          },
+          {
+            "target": "CCCCCCCCCC(=O)OCCCC",
+            "predicted": "CCCCCCO)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 11
+          },
+          {
+            "target": "CC(=O)CCCC(=O)O",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 9
+          },
+          {
+            "target": "CC(=O)CCCCC(=O)O",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 10
+          },
+          {
+            "target": "CCCC(=O)CCC(C)=O",
+            "predicted": "CCCCCCO)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 10
+          },
+          {
+            "target": "CCCCCCCCCC(=O)O",
+            "predicted": "CCCCCCc1ccc2cc(C(=O)O)cc2)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 17
+          },
+          {
+            "target": "CCCC(Br)CC",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 5
+          },
+          {
+            "target": "CC(C)CCCC(C)CCBr",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 10
+          },
+          {
+            "target": "C[C@@]12CCC(=O)C=C1CCCC2=O",
+            "predicted": "CCCCCCC(C)(C(=O)O)CC1",
+            "tanimoto": 0.0,
+            "levenshtein": 17
+          },
+          {
+            "target": "CCCCCCCCC(C)(C)O",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 10
+          },
+          {
+            "target": "CC1CCC(C(C)C)C(OC(=O)CCC(=O)OC2CC(C)CCC2C(C)C)C1",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 41
+          },
+          {
+            "target": "C#CCNC",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 4
+          }
+        ]
+      },
+      "evaluation_summary_valid": {
+        "split": "valid",
+        "model_name": "IntraCrossSmilesModel-SPE",
+        "tokenizer_type": "spe",
+        "seed": 42,
+        "num_samples": 684,
+        "exact_string_match": 0.0,
+        "canonical_exact_match": 0.0,
+        "rdkit_validity": 0.755848,
+        "unique_generated": 117,
+        "unique_valid_generated": 91,
+        "unique_ratio": 0.171053,
+        "valid_unique_ratio": 0.176015,
+        "mode_collapse_score": 0.163743,
+        "prediction_entropy": 3.6754,
+        "avg_pred_char_length": 15.23,
+        "avg_target_char_length": 18.81,
+        "mean_tanimoto": 0.116937,
+        "mean_tanimoto_valid_only": 0.15471,
+        "scaffold_match_rate": 0.0,
+        "mean_fg_precision": 0.206043,
+        "mean_fg_recall": 0.270297,
+        "mean_fg_f1": 0.210235,
+        "mean_levenshtein": 13.6,
+        "target_length_stats": {
+          "mean": 18.81,
+          "min": 3,
+          "max": 61,
+          "p50": 17,
+          "p90": 31,
+          "p95": 35,
+          "p99": 48
+        },
+        "pred_length_stats": {
+          "mean": 15.23,
+          "min": 6,
+          "max": 35,
+          "p50": 16,
+          "p90": 25,
+          "p95": 26,
+          "p99": 29
+        },
+        "target_length_dist": {
+          "15-19": 156,
+          "20-24": 112,
+          "25-29": 65,
+          "5-9": 80,
+          "10-14": 169,
+          "30-34": 59,
+          "45-49": 4,
+          "40-44": 14,
+          "0-4": 8,
+          "35-39": 12,
+          "55-59": 1,
+          "60-64": 1,
+          "50-54": 3
+        },
+        "pred_length_dist": {
+          "8-9": 62,
+          "12-13": 62,
+          "16-17": 171,
+          "14-15": 58,
+          "28-29": 17,
+          "18-19": 63,
+          "26-27": 16,
+          "6-7": 80,
+          "24-25": 51,
+          "20-21": 27,
+          "34-35": 1,
+          "10-11": 66,
+          "32-33": 1,
+          "22-23": 6,
+          "30-31": 3
+        },
+        "top_20_predictions": [
+          {
+            "smiles": "Cc1ccc(C(=O)O)cc1",
+            "count": 112,
+            "fraction": 0.1637
+          },
+          {
+            "smiles": "CCCCCC1",
+            "count": 65,
+            "fraction": 0.095
+          },
+          {
+            "smiles": "CCCCCCN1",
+            "count": 46,
+            "fraction": 0.0673
+          },
+          {
+            "smiles": "CCCCCCCc1ccc(O)cc1",
+            "count": 35,
+            "fraction": 0.0512
+          },
+          {
+            "smiles": "Cc1ccc(CO)cc1",
+            "count": 32,
+            "fraction": 0.0468
+          },
+          {
+            "smiles": "CCCCCCc1ccc(C)cc1",
+            "count": 32,
+            "fraction": 0.0468
+          },
+          {
+            "smiles": "CCCCCC1CC1",
+            "count": 29,
+            "fraction": 0.0424
+          },
+          {
+            "smiles": "CCCCCCO)cc1",
+            "count": 19,
+            "fraction": 0.0278
+          },
+          {
+            "smiles": "O=C(c1ccccc1)c1ccc(Cl)cc1",
+            "count": 19,
+            "fraction": 0.0278
+          },
+          {
+            "smiles": "CCCCCCN(C(=O)O)c1ccc(C)cc1",
+            "count": 15,
+            "fraction": 0.0219
+          },
+          {
+            "smiles": "Clc1ccc(Cc2ccccc2)cc1",
+            "count": 14,
+            "fraction": 0.0205
+          },
+          {
+            "smiles": "O=C(O)c1ccc(Cc2ccccc2)cc1",
+            "count": 13,
+            "fraction": 0.019
+          },
+          {
+            "smiles": "OC1CC1",
+            "count": 10,
+            "fraction": 0.0146
+          },
+          {
+            "smiles": "CCCc1ccc(O)cc1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "CCCCc1ccc(C)cc1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "CCCCCC1CCCCC1",
+            "count": 9,
+            "fraction": 0.0132
+          },
+          {
+            "smiles": "Cc1ccc(C(=O)c2ccccc2)cc1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "CCCCCC1CCCCCC1",
+            "count": 8,
+            "fraction": 0.0117
+          },
+          {
+            "smiles": "CCCCCc1ccccc1",
+            "count": 7,
+            "fraction": 0.0102
+          },
+          {
+            "smiles": "O=C(O)c1ccc(C)cc1",
+            "count": 7,
+            "fraction": 0.0102
+          }
+        ],
+        "validity_by_length": {
+          "5-9": {
+            "count": 142,
+            "valid": 15,
+            "rate": 0.1056338028169014
+          },
+          "10-14": {
+            "count": 163,
+            "valid": 141,
+            "rate": 0.8650306748466258
+          },
+          "15-19": {
+            "count": 257,
+            "valid": 245,
+            "rate": 0.953307392996109
+          },
+          "20-24": {
+            "count": 47,
+            "valid": 46,
+            "rate": 0.9787234042553191
+          },
+          "25-29": {
+            "count": 70,
+            "valid": 70,
+            "rate": 1.0
+          },
+          "30-34": {
+            "count": 4,
+            "valid": 0,
+            "rate": 0.0
+          },
+          "35-39": {
+            "count": 1,
+            "valid": 0,
+            "rate": 0.0
+          }
+        },
+        "tanimoto_by_length": {
+          "5-9": {
+            "count": 142,
+            "mean_tanimoto": 0.006234916573578427
+          },
+          "10-14": {
+            "count": 163,
+            "mean_tanimoto": 0.16517890887490772
+          },
+          "15-19": {
+            "count": 257,
+            "mean_tanimoto": 0.12735432461538942
+          },
+          "20-24": {
+            "count": 47,
+            "mean_tanimoto": 0.1626639465704619
+          },
+          "25-29": {
+            "count": 70,
+            "mean_tanimoto": 0.16857580593045818
+          },
+          "30-34": {
+            "count": 4,
+            "mean_tanimoto": 0.0
+          },
+          "35-39": {
+            "count": 1,
+            "mean_tanimoto": 0.0
+          }
+        },
+        "teacher_forcing_loss": 3.930285,
+        "teacher_forcing_token_accuracy": 0.192251,
+        "pct_ending_with_eos": 100.0,
+        "pct_hitting_max_len": 0.0,
+        "examples": [
+          {
+            "target": "C=C(CC)CCC=C(C)C",
+            "predicted": "CCCCCCN1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "Cn1c(=O)oc(=O)c2ccccc21",
+            "predicted": "Cc1ccc(CO)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.108108
+          },
+          {
+            "target": "CC(=O)OC/C=C(\\C)CCC=C(C)C",
+            "predicted": "CCCCCCc1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.045455
+          },
+          {
+            "target": "C=CCCl",
+            "predicted": "CCCCCCc1c[nH]1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.037037
+          },
+          {
+            "target": "C#CCO",
+            "predicted": "Cc1ccc(C(=O)O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.04
+          },
+          {
+            "target": "CCCCCl",
+            "predicted": "CCCc1ccc(O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.16
+          },
+          {
+            "target": "NCCCCN",
+            "predicted": "O=C(O)c1ccc([N+](=O)[O-])cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "C1=CCCC=CCC1",
+            "predicted": "CCCCCCc1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.038462
+          },
+          {
+            "target": "CCCCNCCCC",
+            "predicted": "CCCCCC=CCCC[C@@H]1",
+            "exact": 0,
+            "valid": 0,
+            "tanimoto": 0.0
+          },
+          {
+            "target": "c1ccc(CNCC2CC2)cc1",
+            "predicted": "CCCCCc1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.272727
+          },
+          {
+            "target": "C=CC(=C)CCC=C(C)C",
+            "predicted": "CCCCCCN(C)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.047619
+          },
+          {
+            "target": "CC(C)(CO)CO",
+            "predicted": "Cc1ccc(C(=O)O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.08
+          },
+          {
+            "target": "CCCCOP(=O)(OCCCC)OCCCC",
+            "predicted": "CCCCCC=CCCC(C(=O)O)c1ccccc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.162791
+          },
+          {
+            "target": "CC(=O)N(C)C",
+            "predicted": "Cc1ccc(C(=O)O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.173913
+          },
+          {
+            "target": "c1ccc(CNC2CC2)cc1",
+            "predicted": "Cc1ccc(CO)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.15625
+          },
+          {
+            "target": "CC(=O)OCCC(C)CCC=C(C)C",
+            "predicted": "CCCCCCCc1ccc(O)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.065217
+          },
+          {
+            "target": "CC(=O)OCC#CCOC(C)=O",
+            "predicted": "Cc1ccc(CO)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.103448
+          },
+          {
+            "target": "CC(C)C(=O)OC(C)(C)C",
+            "predicted": "CCCCCCN(C(=O)O)c1ccc(C)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.093023
+          },
+          {
+            "target": "CCCC(O)P(=O)(OCC)OCC",
+            "predicted": "Cc1ccc(C(=O)CCO)cc1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.1
+          },
+          {
+            "target": "C/C=C/C(=O)OC(C)C",
+            "predicted": "OC1CC1",
+            "exact": 0,
+            "valid": 1,
+            "tanimoto": 0.04
+          }
+        ],
+        "failure_cases": [
+          {
+            "target": "C=C(CC)CCC=C(C)C",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 10
+          },
+          {
+            "target": "CCCCNCCCC",
+            "predicted": "CCCCCC=CCCC[C@@H]1",
+            "tanimoto": 0.0,
+            "levenshtein": 10
+          },
+          {
+            "target": "CCC(C)CCC=C(C)C",
+            "predicted": "CCCCCCC(C)(C(=O)O)(C(=O)O)(C(=O))C2",
+            "tanimoto": 0.0,
+            "levenshtein": 22
+          },
+          {
+            "target": "CC(CCO)CCCO",
+            "predicted": "CCCCCCO)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 6
+          },
+          {
+            "target": "C1CC[C@H]2CCCC[C@@H]2C1",
+            "predicted": "CCCCOC1",
+            "tanimoto": 0.0,
+            "levenshtein": 17
+          },
+          {
+            "target": "CCSC(=O)C(=O)SCC",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 12
+          },
+          {
+            "target": "CCCCC(CC)COP(=O)(OCC(CC)CCCC)OCC(CC)CCCC",
+            "predicted": "CCCCCCN(C(=O)O)(C(=O)c2ccccc2)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 25
+          },
+          {
+            "target": "C1CCC2CCCCC2C1",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 7
+          },
+          {
+            "target": "ON=C1CCCCC1",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 5
+          },
+          {
+            "target": "CC(C)(C)N",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 5
+          },
+          {
+            "target": "CCCCCCCCCCCCCCC(=O)O",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 14
+          },
+          {
+            "target": "CCCCC(CC)COC(C)=O",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 11
+          },
+          {
+            "target": "CC12CCC(C(=O)C1=O)C2(C)C",
+            "predicted": "CCCCCCO)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 16
+          },
+          {
+            "target": "CCOC(=O)CCl",
+            "predicted": "CCCCCCO)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 6
+          },
+          {
+            "target": "CCC(C)CC(=O)O",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 7
+          },
+          {
+            "target": "CCOC(=O)OCC",
+            "predicted": "CCCCCCO)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 6
+          },
+          {
+            "target": "O=C1CCCCCCCCCCCC(=O)OCCO1",
+            "predicted": "CCCCCCCc1",
+            "tanimoto": 0.0,
+            "levenshtein": 17
+          },
+          {
+            "target": "CCCCCCCCCC(C)CO",
+            "predicted": "CCCCCC1",
+            "tanimoto": 0.0,
+            "levenshtein": 9
+          },
+          {
+            "target": "CCN(CC)C[Si](C)(C)C",
+            "predicted": "CCCCCCN1",
+            "tanimoto": 0.0,
+            "levenshtein": 13
+          },
+          {
+            "target": "CC(C)=CCCC(C)CC=O",
+            "predicted": "CCCCCCO)cc1",
+            "tanimoto": 0.0,
+            "levenshtein": 10
+          }
+        ]
+      },
+      "parameter_count": {
+        "model_name": "IntraCrossSmilesModel-SPE",
+        "tokenizer_type": "spe",
+        "vocab_size": 256,
+        "total_params": 1835136,
+        "by_module": {
+          "ir_tokenizer": 12032,
+          "h1_tokenizer": 11392,
+          "c13_tokenizer": 12800,
+          "ir_mod": 128,
+          "h1_mod": 128,
+          "c13_mod": 128,
+          "ir_intra": 198272,
+          "h1_intra": 198272,
+          "c13_intra": 198272,
+          "ir_cross": 198528,
+          "h1_cross": 198528,
+          "c13_cross": 198528,
+          "decoder": 608000,
+          "_direct_params": 128
+        }
+      },
+      "config_used": {
+        "model": "intra_cross_equal",
+        "model_name": "IntraCrossSmilesModel-SPE",
+        "tokenizer_type": "spe",
+        "vocab_size": 256,
+        "n_params": 1835136,
+        "processed_dir": "/data/home/sczc698/run/xxy/Trans-cross/data/processed",
+        "lr": 0.0001,
+        "seed": 42,
+        "batch_size": 32,
+        "epochs": 30,
+        "max_smiles_len": 96,
+        "patch_size": 64,
+        "d_model": 128,
+        "num_heads": 4,
+        "decoder_layers": 2,
+        "train_samples": 3195,
+        "valid_samples": 684,
+        "test_samples": 684,
+        "config_file": "configs/smiles_spe_equal_param.yaml",
+        "config_content": {
+          "data": {
+            "processed_dir": "/data/home/sczc698/run/xxy/Trans-cross/data/processed",
+            "max_smiles_len": 96
+          },
+          "tokenizer": {
+            "type": "spe",
+            "vocab_path": "/data/home/sczc698/run/xxy/Trans-cross/data/processed/spe_vocab_256.json",
+            "target_vocab_size": 256,
+            "min_frequency": 2,
+            "patch_size": 64,
+            "use_modality_embedding": true,
+            "use_absolute_position_embedding": true
+          },
+          "shared": {
+            "d_model": 128,
+            "num_heads": 4,
+            "decoder_layers": 2,
+            "decoder_ffn_dim": 512,
+            "dropout": 0.1,
+            "init_std": 0.02
+          },
+          "e0_concat": {
+            "encoder_layers": 6,
+            "encoder_ffn_dim": 512
+          },
+          "e1_intra_cross": {
+            "intra_layers": 1,
+            "cross_layers": 1,
+            "fusion_layers": 0,
+            "encoder_ffn_dim": 512,
+            "cross_zero_init_out_proj": true
+          },
+          "training": {
+            "epochs": 30,
+            "batch_size": 32,
+            "lr": 0.0001,
+            "weight_decay": 0.0001,
+            "grad_clip": 1.0,
+            "seed": 42
+          },
+          "equality_constraint": {
+            "max_relative_param_diff": 0.01
+          }
+        }
+      },
+      "predictions_test": {
+        "num_rows": 684,
+        "columns": [
+          "idx",
+          "target_smiles",
+          "pred_smiles",
+          "target_len",
+          "pred_len",
+          "exact_match",
+          "canonical_exact_match",
+          "rdkit_valid",
+          "tanimoto",
+          "scaffold_match",
+          "fg_precision",
+          "fg_recall",
+          "fg_f1",
+          "token_accuracy_sample",
+          "levenshtein",
+          "pred_token_length",
+          "eos_hit",
+          "eos_position",
+          "hit_max_len",
+          "split",
+          "model_name",
+          "tokenizer_type",
+          "seed"
+        ]
+      }
+    }
+  ]
+}
