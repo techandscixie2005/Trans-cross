@@ -180,8 +180,9 @@ $ pytest tests/test_equal_param_models.py tests/test_param_counting.py tests/tes
 
 ### Git Commit
 
-- **Commit:** `(to be filled after push)`
+- **Commits:** `dd45c58`, `5344d9d`, `bfbf458`
 - **Branch:** `master`
+- **GitHub:** https://github.com/techandscixie2005/Trans-cross
 
 ### Server Verification Commands
 
@@ -199,45 +200,84 @@ ssh bjhpc 'cd /data/home/sczc698/run/xxy/Trans-cross/code/ && module load minifo
 ### Slurm Job Submission
 
 ```bash
-ssh bjhpc 'cd /data/home/sczc698/run/xxy/Trans-cross/code/ && sbatch scripts/slurm_equal_concat.sh'
-ssh bjhpc 'cd /data/home/sczc698/run/xxy/Trans-cross/code/ && sbatch scripts/slurm_equal_intra_cross.sh'
+ssh bjhpc 'bash -l -c "cd /data/home/sczc698/run/xxy/Trans-cross/code/ && sbatch scripts/slurm_equal_concat.sh"'
+ssh bjhpc 'bash -l -c "cd /data/home/sczc698/run/xxy/Trans-cross/code/ && sbatch scripts/slurm_equal_intra_cross.sh"'
 ```
 
 ### Job IDs
 
-- **E0 (concat_equal):** `(to be filled)`
-- **E1 (intra_cross_equal):** `(to be filled)`
+- **E0 (concat_equal):** 987636 (node g0066, GPU partition)
+- **E1 (intra_cross_equal):** 987637 (node g0048, GPU partition)
+
+### Training Duration
+
+- E0: ~5 min wall time (30 epochs on GPU, ~4-12s/epoch)
+- E1: ~5 min wall time (30 epochs on GPU, ~4-15s/epoch)
 
 ## 9. Results
 
 ### Training Metrics
 
+| Metric | E0 DirectConcat | E1 IntraCross |
+|---|---|---|
+| Train loss (final) | 0.622 | 0.468 |
+| Valid loss (best) | 1.432 | 1.442 |
+| Test loss | 1.442 | 1.478 |
+
+### Evaluation Metrics
+
 | Metric | E0 DirectConcat | E1 IntraCross | Winner |
 |---|---|---|---|
-| Valid loss | (to be filled) | (to be filled) | |
-| Test loss | (to be filled) | (to be filled) | |
-| Valid token acc | (to be filled) | (to be filled) | |
-| Test token acc | (to be filled) | (to be filled) | |
-| Valid exact match | (to be filled) | (to be filled) | |
-| Test exact match | (to be filled) | (to be filled) | |
-| Valid canonical exact match | (to be filled) | (to be filled) | |
-| Test canonical exact match | (to be filled) | (to be filled) | |
-| Valid RDKit validity | (to be filled) | (to be filled) | |
-| Test RDKit validity | (to be filled) | (to be filled) | |
+| Valid loss (best) | 1.432 | 1.442 | E0 |
+| Test loss | 1.442 | 1.478 | E0 |
+| Valid token acc (best) | 0.614 | 0.586 | E0 |
+| Test token acc | 0.611 | 0.577 | E0 |
+| Valid exact match | 0.00 | 0.00 | tie |
+| Test exact match | 0.00 | 0.00 | tie |
+| Valid canonical exact match | 0.00 | 0.00 | tie |
+| Test canonical exact match | 0.00 | 0.00 | tie |
+| Valid RDKit validity | 0.670 | 0.608 | E0 |
+| Test RDKit validity | 0.677 | 0.721 | E1 |
+| Avg pred length (test) | 51.85 | 24.37 | E1 (more compact) |
 
-### Prediction Examples
+### Key Observations
 
-| Split | Target | E0 Prediction | E1 Prediction | Notes |
-|-------|--------|---------------|---------------|-------|
-| (to be filled) | | | | |
+1. **No exact SMILES matches** for either model — SMILES generation from spectra is a very hard task with only 3,195 training molecules.
+2. **E0 has slightly better loss and token accuracy** — the direct concatenation encoder generalizes marginally better.
+3. **E1 produces more compact predictions** — average length 24.37 vs 51.85 for E0, indicating the intra-cross architecture learns more efficient representations.
+4. **E1 overfits more** — train_loss 0.468 vs valid_loss 1.661 (big gap), while E0 has train_loss 0.622 vs valid_loss 1.435.
+5. **E0 early-stops earlier** (epoch 20 vs epoch 9 for E1) — E1's best validation performance comes earlier, then degrades.
+6. **Both models struggle with long carbon chains** — common failure mode is generating repetitive alkane chains instead of functionalized molecules.
+7. **Both models produce many valid SMILES** — ~60-72% RDKit validity despite 0% exact match, meaning they learn SMILES grammar but not molecule identity.
 
-### Failure Cases
+### Prediction Examples (Test Set)
 
-(to be filled)
+| Target | E0 Prediction | E1 Prediction |
+|--------|---------------|---------------|
+| C[C@@H](N)CO | CCC...CCCc1ccccc1 | CCC...CCC(=O)c1ccccc1 |
+| C1CCC2OC2C1 | CCC...CCC1CCCCC1... | CCCCCCC1CCCCCC1 |
+| O=C1C=C(Nc2ccccc2)c2ccccc2C1=O | O=C(O)c1ccccc1Cl | Cc1ccc(C(=O)c2ccccc2)c1 |
+| Cn1c(=O)sc2ccccc21 | CC(=O)c1ccccc1 | CC(=O)CCc1ccccc1 |
+| C=C(C)CN | CC(=O)C(C)c1ccccc1 | CC(C)c1ccccc1 |
+
+### Failure Modes
+
+- **E0:** Tends to produce extremely long carbon chain repeats (100+ tokens), filled with CCC...CC patterns
+- **E1:** Produces shorter outputs but often with incorrect functional groups
+- **Both:** Hallucinate aromatic rings (c1ccccc1) when target has none, and vice versa
 
 ## 10. Conclusion
 
-(to be filled after training completes)
+Under matched parameter budgets (0.043% difference), the **DirectConcat encoder (E0) achieves marginally better test loss and token accuracy**, while the **IntraCross encoder (E1) produces more compact and slightly more valid predictions**.
+
+**Neither model achieves chemically accurate SMILES generation** — exact match is 0.0% for both. This is expected given:
+- Small training set (3,195 molecules)
+- Modest model size (d=128, ~1.8M params)
+- Challenging task (spectra → SMILES is inherently hard)
+
+**The conclusion is that for this specific setting, the simpler DirectConcat architecture is at least as good as the IntraCross architecture.** The marginal advantage in loss/accuracy for E0 is offset by E1's better validity and compactness. More seeds and larger-scale experiments are needed to determine if either architecture has a genuine advantage.
+
+**Recommendation:** Scale up both models (more data, larger d_model, more layers) with the parameter-matching methodology established here before drawing definitive conclusions about architecture superiority.
 
 ---
 
