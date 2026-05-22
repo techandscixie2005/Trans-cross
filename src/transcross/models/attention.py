@@ -223,6 +223,7 @@ class CrossAttentionBlockPreLN(nn.Module):
         num_heads: int,
         d_ff: Optional[int] = None,
         dropout: float = 0.1,
+        gate_init: float = -4.0,
     ):
         super().__init__()
         self.norm_q = nn.LayerNorm(d_model)
@@ -233,8 +234,11 @@ class CrossAttentionBlockPreLN(nn.Module):
         self.norm2 = nn.LayerNorm(d_model)
         self.ffn = FeedForward(d_model, d_ff, dropout)
 
-        # Learnable residual gate: alpha = sigmoid(g), g_0 = -4.0 -> alpha ≈ 0.018
-        self.gate_logit = nn.Parameter(torch.tensor(-4.0))
+        # Learnable residual gate: alpha = sigmoid(g)
+        # gate_init = -4.0 -> alpha ≈ 0.018 (near-closed, v1 default)
+        # gate_init = -2.0 -> alpha ≈ 0.119 (partially open, v2)
+        # gate_init =  0.0 -> alpha = 0.5   (fully open)
+        self.gate_logit = nn.Parameter(torch.tensor(gate_init))
 
     def get_alpha(self) -> torch.Tensor:
         """Return current gate value alpha = sigmoid(g)."""

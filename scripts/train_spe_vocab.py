@@ -29,9 +29,11 @@ def main():
     parser.add_argument("--vocab-size", type=int, default=1000)
     parser.add_argument("--min-frequency", type=int, default=2)
     parser.add_argument("--max-len", type=int, default=120)
+    parser.add_argument("--prefix", default="spe", help="Prefix for output filenames")
     args = parser.parse_args()
 
     os.makedirs(args.out_dir, exist_ok=True)
+    prefix = args.prefix
 
     # Build SPE vocab using the core builder
     from src.transcross.tokenization.spe_tokenizer import SPETokenizer
@@ -60,10 +62,10 @@ def main():
     print(f"SPE vocab_size: {tokenizer.vocab_size}, merges: {n_merges}")
 
     # Save
-    vocab_path = os.path.join(args.out_dir, "spe_vocab.json")
-    merges_path = os.path.join(args.out_dir, "spe_merges.txt")
-    config_path = os.path.join(args.out_dir, "spe_tokenizer_config.json")
-    summary_path = os.path.join(args.out_dir, "spe_tokenization_summary.json")
+    vocab_path = os.path.join(args.out_dir, f"{prefix}_vocab.json")
+    merges_path = os.path.join(args.out_dir, f"{prefix}_merges.txt")
+    config_path = os.path.join(args.out_dir, f"{prefix}_tokenizer_config.json")
+    summary_path = os.path.join(args.out_dir, f"{prefix}_tokenization_summary.json")
 
     tokenizer.save(vocab_path)
     print(f"Saved vocab: {vocab_path}")

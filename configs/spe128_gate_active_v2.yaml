@@ -1,0 +1,64 @@
+# SPE-128 Active-Gate SMILES Generation Ablation v2
+# Changes from v1 (SPE-1000, g0=-4):
+#   1. SPE vocab size: 1000 -> 128 (less aggressive compression)
+#   2. E1 cross-attention gate init: g0=-4 -> g0=-2 (alpha0 ≈ 0.119)
+#
+# Core scientific question (unchanged):
+#   Does intra-modal self-attention + cross-modal attention
+#   outperform direct concatenation self-attention for
+#   IR+NMR-to-SMILES generation?
+#
+# Strict constraints:
+#   - ONLY compare E0 vs E1
+#   - SPE-128 tokenization for both
+#   - No coordinate bias, no modality-pair bias
+#   - No fingerprint auxiliary loss, no reranking
+#   - Same data, same decoder, same optimizer, same training
+
+data:
+  processed_dir: /data/home/sczc698/run/xxy/Trans-cross/data/processed
+  max_smiles_len: 120
+
+tokenizer:
+  type: spe
+  vocab_path: /data/home/sczc698/run/xxy/Trans-cross/data/processed/spe128_vocab.json
+  target_vocab_size: 128
+  min_frequency: 2
+  prefix: spe128
+  patch_size: 64
+  use_modality_embedding: true
+  use_absolute_position_embedding: true
+
+shared:
+  d_model: 128
+  num_heads: 4
+  decoder_layers: 2
+  decoder_ffn_dim: 512
+  dropout: 0.1
+
+# E0: DirectConcat encoder
+e0_concat:
+  encoder_layers: 6
+  encoder_ffn_dim: 512
+
+# E1: IntraCross encoder with active gate init (g0=-2, alpha0≈0.119)
+e1_intra_cross:
+  intra_layers: 1
+  cross_layers: 1
+  fusion_layers: 0
+  encoder_ffn_dim: 512
+  cross_gate_init: -2.0
+
+training:
+  epochs: 50
+  batch_size: 32
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  warmup_steps: 500
+  grad_clip: 1.0
+  label_smoothing: 0.05
+  seed: 42
+  beam_size: 5
+
+equality_constraint:
+  max_relative_param_diff: 0.15

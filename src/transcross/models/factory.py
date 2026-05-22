@@ -69,6 +69,7 @@ def build_smiles_model(
         cross_layers = e1.get("cross_layers", 1)
         fusion_layers = e1.get("fusion_layers", 0)
         encoder_ffn_dim = e1.get("encoder_ffn_dim", 512)
+        cross_gate_init = e1.get("cross_gate_init", -4.0)
         return IntraCrossSmilesModel(
             vocab_size=vocab_size,
             ir_len=1801, h1_len=1501, c13_len=2201,
@@ -82,6 +83,7 @@ def build_smiles_model(
             decoder_ffn_dim=decoder_ffn_dim,
             num_heads=num_heads,
             dropout=dropout,
+            cross_gate_init=cross_gate_init,
             pad_id=pad_id,
             max_smiles_len=max_smiles_len,
         )

@@ -41,12 +41,14 @@ class IntraCrossSmilesModel(nn.Module):
         decoder_ffn_dim: int = 512,
         num_heads: int = 4,
         dropout: float = 0.1,
+        cross_gate_init: float = -4.0,
         pad_id: int = 0,
         max_smiles_len: int = 256,
     ):
         super().__init__()
         self.d_model = d_model
         self.pad_id = pad_id
+        self.cross_gate_init = cross_gate_init
 
         # Patch tokenizers
         self.ir_tokenizer = PatchTokenizer1D(ir_len, patch_size, d_model)
@@ -72,23 +74,26 @@ class IntraCrossSmilesModel(nn.Module):
             for _ in range(encoder_layers)
         ])
 
-        # Cross-modal attention blocks (with learnable residual gate,
+        # Cross-modal attention blocks (with configurable gate init,
         # near-zero output init automatically applied)
         self.ir_cross = nn.ModuleList([
             CrossAttentionBlockPreLN(
                 d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout,
+                gate_init=cross_gate_init,
             )
             for _ in range(cross_layers)
         ])
         self.h1_cross = nn.ModuleList([
             CrossAttentionBlockPreLN(
                 d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout,
+                gate_init=cross_gate_init,
             )
             for _ in range(cross_layers)
         ])
         self.c13_cross = nn.ModuleList([
             CrossAttentionBlockPreLN(
                 d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout,
+                gate_init=cross_gate_init,
             )
             for _ in range(cross_layers)
         ])
