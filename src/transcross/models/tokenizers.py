@@ -21,12 +21,13 @@ class PatchTokenizer1D(nn.Module):
         # Number of patches after padding
         self.num_patches = math.ceil(input_len / patch_size)
 
-        # Linear projection per patch
+        # Linear projection per patch (Xavier uniform init)
         self.proj = nn.Linear(patch_size, d_model)
+        nn.init.xavier_uniform_(self.proj.weight)
+        nn.init.zeros_(self.proj.bias)
 
         # Positional embeddings (learnable, per modality)
         self.pos_embed = nn.Parameter(torch.zeros(1, self.num_patches, d_model))
-
         nn.init.trunc_normal_(self.pos_embed, std=0.02)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

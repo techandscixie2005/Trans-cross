@@ -104,7 +104,7 @@ class TransformerSmilesDecoder(nn.Module):
     def _reset_parameters(self) -> None:
         _init_embedding(self.token_embed)
         _init_embedding(self.pos_embed)
-        nn.init.normal_(self.output_proj.weight, std=0.02)
+        nn.init.xavier_uniform_(self.output_proj.weight)
         nn.init.zeros_(self.output_proj.bias)
 
     def _build_causal_mask(self, seq_len: int, device: torch.device) -> torch.Tensor:

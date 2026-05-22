@@ -1,7 +1,12 @@
 """Bias-free custom multi-head attention and Transformer blocks.
 
-All attention projections use bias=True for Linear layers but NO
-additive attention bias (no coordinate bias, no modality bias,
+All self-attention Q/K/V/O projections use Xavier uniform init.
+Cross-attention Q/K/V projections use Xavier uniform, but output
+projection uses near-zero Normal(0, 1e-4) init.
+Cross-attention blocks include a learnable residual gate alpha=sigmoid(g),
+with g initialized to -4.0 (alpha ≈ 0.018).
+
+NO additive attention bias is allowed (no coordinate bias, no modality bias,
 no relative position bias, no Graphormer-style bias).
 """
 
@@ -13,8 +18,21 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-def _init_linear(linear: nn.Linear, std: float = 0.02) -> None:
-    nn.init.normal_(linear.weight, std=std)
+def _init_linear_xavier(linear: nn.Linear) -> None:
+    """Xavier uniform init for self-attention projections."""
+    nn.init.xavier_uniform_(linear.weight)
+    if linear.bias is not None:
+        nn.init.zeros_(linear.bias)
+
+
+def _init_linear_near_zero(linear: nn.Linear) -> None:
+    """Near-zero init for cross-attention output projection.
+
+    Weight ~ Normal(0, 1e-4), bias = 0.
+    This ensures cross-attention contributes minimally at initialization,
+    allowing the model to first learn intra-modal representations.
+    """
+    nn.init.normal_(linear.weight, std=1e-4)
     if linear.bias is not None:
         nn.init.zeros_(linear.bias)
 
@@ -32,6 +50,7 @@ class MultiHeadAttention(nn.Module):
         num_heads: int,
         dropout: float = 0.1,
         zero_init_out_proj: bool = False,
+        near_zero_out_proj: bool = False,
     ):
         super().__init__()
         assert d_model % num_heads == 0
@@ -46,17 +65,21 @@ class MultiHeadAttention(nn.Module):
         self.out_proj = nn.Linear(d_model, d_model, bias=True)
         self.dropout = nn.Dropout(dropout)
 
-        self._reset_parameters(zero_init_out_proj)
+        self._reset_parameters(zero_init_out_proj, near_zero_out_proj)
 
-    def _reset_parameters(self, zero_init_out_proj: bool) -> None:
-        _init_linear(self.q_proj)
-        _init_linear(self.k_proj)
-        _init_linear(self.v_proj)
-        if zero_init_out_proj:
+    def _reset_parameters(
+        self, zero_init_out_proj: bool, near_zero_out_proj: bool
+    ) -> None:
+        _init_linear_xavier(self.q_proj)
+        _init_linear_xavier(self.k_proj)
+        _init_linear_xavier(self.v_proj)
+        if near_zero_out_proj:
+            _init_linear_near_zero(self.out_proj)
+        elif zero_init_out_proj:
             nn.init.zeros_(self.out_proj.weight)
             nn.init.zeros_(self.out_proj.bias)
         else:
-            _init_linear(self.out_proj)
+            _init_linear_xavier(self.out_proj)
 
     def forward(
         self,
@@ -135,14 +158,17 @@ class FeedForward(nn.Module):
     def _reset_parameters(self) -> None:
         for m in self.net:
             if isinstance(m, nn.Linear):
-                _init_linear(m)
+                _init_linear_xavier(m)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x)
 
 
 class TransformerBlockPreLN(nn.Module):
-    """Standard Pre-LN Transformer block: self-attention + FFN."""
+    """Standard Pre-LN Transformer block: self-attention + FFN.
+
+    Self-attention uses Xavier uniform init for all projections.
+    """
 
     def __init__(
         self,
@@ -175,9 +201,20 @@ class TransformerBlockPreLN(nn.Module):
 
 
 class CrossAttentionBlockPreLN(nn.Module):
-    """Pre-LN cross-attention block: cross-attention + FFN.
+    """Pre-LN cross-attention block with learnable residual gate.
 
     Query tokens attend to key/value tokens from another source.
+    Includes a learnable gate: alpha = sigmoid(g), g initialized to -4.0
+    so that alpha ≈ 0.018 at initialization.
+
+    Output projection uses near-zero Normal(0, 1e-4) init so that
+    cross-attention contributes minimally at the start of training,
+    allowing the model to first build useful intra-modal representations.
+
+    Forward:
+        attn_out = CrossAttn(LN_q(query), LN_kv(kv))
+        query = query + alpha * attn_out
+        query = query + FFN(LN(query))
     """
 
     def __init__(
@@ -186,16 +223,22 @@ class CrossAttentionBlockPreLN(nn.Module):
         num_heads: int,
         d_ff: Optional[int] = None,
         dropout: float = 0.1,
-        zero_init_out_proj: bool = False,
     ):
         super().__init__()
         self.norm_q = nn.LayerNorm(d_model)
         self.norm_kv = nn.LayerNorm(d_model)
         self.cross_attn = MultiHeadAttention(
-            d_model, num_heads, dropout, zero_init_out_proj=zero_init_out_proj
+            d_model, num_heads, dropout, near_zero_out_proj=True
         )
         self.norm2 = nn.LayerNorm(d_model)
         self.ffn = FeedForward(d_model, d_ff, dropout)
+
+        # Learnable residual gate: alpha = sigmoid(g), g_0 = -4.0 -> alpha ≈ 0.018
+        self.gate_logit = nn.Parameter(torch.tensor(-4.0))
+
+    def get_alpha(self) -> torch.Tensor:
+        """Return current gate value alpha = sigmoid(g)."""
+        return torch.sigmoid(self.gate_logit)
 
     def forward(
         self,
@@ -203,10 +246,11 @@ class CrossAttentionBlockPreLN(nn.Module):
         kv: torch.Tensor,
         kv_padding_mask: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
+        alpha = torch.sigmoid(self.gate_logit)
         # Cross-attention with Pre-LN
         q_norm = self.norm_q(query)
         kv_norm = self.norm_kv(kv)
-        query = query + self.cross_attn(
+        query = query + alpha * self.cross_attn(
             q_norm, kv_norm, kv_norm, key_padding_mask=kv_padding_mask
         )
         # FFN with Pre-LN

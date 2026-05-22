@@ -41,7 +41,6 @@ class IntraCrossSmilesModel(nn.Module):
         decoder_ffn_dim: int = 512,
         num_heads: int = 4,
         dropout: float = 0.1,
-        zero_init_cross_out_proj: bool = True,
         pad_id: int = 0,
         max_smiles_len: int = 256,
     ):
@@ -73,25 +72,23 @@ class IntraCrossSmilesModel(nn.Module):
             for _ in range(encoder_layers)
         ])
 
-        # Cross-modal attention blocks
+        # Cross-modal attention blocks (with learnable residual gate,
+        # near-zero output init automatically applied)
         self.ir_cross = nn.ModuleList([
             CrossAttentionBlockPreLN(
                 d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout,
-                zero_init_out_proj=zero_init_cross_out_proj,
             )
             for _ in range(cross_layers)
         ])
         self.h1_cross = nn.ModuleList([
             CrossAttentionBlockPreLN(
                 d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout,
-                zero_init_out_proj=zero_init_cross_out_proj,
             )
             for _ in range(cross_layers)
         ])
         self.c13_cross = nn.ModuleList([
             CrossAttentionBlockPreLN(
                 d_model, num_heads, d_ff=encoder_ffn_dim, dropout=dropout,
-                zero_init_out_proj=zero_init_cross_out_proj,
             )
             for _ in range(cross_layers)
         ])
@@ -194,6 +191,21 @@ class IntraCrossSmilesModel(nn.Module):
             input_ids, encoder_memory, memory_padding_mask=memory_mask
         )
         return logits
+
+    def get_gate_alphas(self) -> dict:
+        """Return current cross-attention gate values for diagnostics.
+
+        Returns dict mapping modality -> list of alpha values (one per cross layer).
+        alpha = sigmoid(g), initialized near 0.018 (g = -4.0).
+        """
+        alphas = {}
+        if self.ir_cross:
+            alphas["ir"] = [block.get_alpha().item() for block in self.ir_cross]
+        if self.h1_cross:
+            alphas["1h"] = [block.get_alpha().item() for block in self.h1_cross]
+        if self.c13_cross:
+            alphas["13c"] = [block.get_alpha().item() for block in self.c13_cross]
+        return alphas
 
     def count_params(self) -> int:
         return sum(p.numel() for p in self.parameters() if p.requires_grad)

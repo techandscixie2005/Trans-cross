@@ -88,9 +88,14 @@ class TestAttentionModuleProperties:
         assert hasattr(block, "norm_q")
         assert hasattr(block, "norm_kv")
 
-    def test_cross_zero_init(self):
-        block = CrossAttentionBlockPreLN(d_model=128, num_heads=4, zero_init_out_proj=True)
-        assert torch.all(block.cross_attn.out_proj.weight == 0)
+    def test_cross_near_zero_init(self):
+        """Cross-attention out_proj should be near-zero (Normal(0, 1e-4)), not all zero."""
+        block = CrossAttentionBlockPreLN(d_model=128, num_heads=4)
+        w = block.cross_attn.out_proj.weight
+        # Near-zero: mean close to 0, small but non-zero std
+        assert abs(w.mean().item()) < 0.001
+        assert 1e-5 < w.std().item() < 1e-2
+        # Bias should be zero
         assert torch.all(block.cross_attn.out_proj.bias == 0)
 
     def test_mha_no_bias_in_attention_logits(self):

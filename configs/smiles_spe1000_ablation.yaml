@@ -1,0 +1,67 @@
+# SPE-1000 SMILES Generation Ablation Configuration
+# E0: DirectConcat encoder (direct concat self-attention)
+# E1: IntraCross encoder (intra-modal + cross-modal attention)
+# Both share identical SPE-1000 tokenizer and decoder architecture.
+#
+# Scientific question: Does intra-modal self-attention + cross-modal
+# attention outperform direct concatenation self-attention for
+# IR+NMR-to-SMILES generation?
+#
+# Strict constraints:
+#   - ONLY compare E0 vs E1
+#   - SPE-1000 tokenization for both
+#   - No coordinate bias, no modality-pair bias
+#   - No fingerprint auxiliary loss, no reranking
+#   - Same data, same decoder, same optimizer, same training
+#   - Parameter counts within 10-15%
+
+data:
+  processed_dir: /data/home/sczc698/run/xxy/Trans-cross/data/processed
+  max_smiles_len: 120
+
+tokenizer:
+  type: spe
+  vocab_path: /data/home/sczc698/run/xxy/Trans-cross/data/processed/spe_vocab_1000.json
+  target_vocab_size: 1000
+  min_frequency: 2
+  patch_size: 64
+  use_modality_embedding: true
+  use_absolute_position_embedding: true
+
+shared:
+  d_model: 128
+  num_heads: 4
+  decoder_layers: 2
+  decoder_ffn_dim: 512
+  dropout: 0.1
+
+# E0: DirectConcat encoder with multiple encoder layer candidates
+# Actual layer count chosen by parameter matching (3-6 layers)
+e0_concat:
+  encoder_layers: 4
+  encoder_ffn_dim: 512
+
+# E1: IntraCross encoder
+# intra_layers: intra-modal self-attention layers per modality
+# cross_layers: cross-modal attention layers
+# fusion_layers: 0 (no additional fusion after cross-attention)
+# Cross-attention uses near-zero output init + learnable gate alpha=sigmoid(g), g=-4
+e1_intra_cross:
+  intra_layers: 1
+  cross_layers: 1
+  fusion_layers: 0
+  encoder_ffn_dim: 512
+
+training:
+  epochs: 50
+  batch_size: 32
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  warmup_steps: 500
+  grad_clip: 1.0
+  label_smoothing: 0.05
+  seed: 42
+  beam_size: 5
+
+equality_constraint:
+  max_relative_param_diff: 0.15

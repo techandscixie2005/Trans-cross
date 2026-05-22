@@ -100,36 +100,36 @@ class TestIntraCrossSmilesModel:
             vocab_size=tokenizer.vocab_size,
             d_model=64, encoder_layers=1, decoder_layers=1,
             num_heads=4, patch_size=64, pad_id=tokenizer.pad_id,
-            zero_init_cross_out_proj=True,
         )
         logits = model(ir, h1, c13, input_ids)
         assert not torch.isnan(logits).any()
 
-    def test_zero_init_default(self, tokenizer):
+    def test_cross_attn_near_zero_init(self, tokenizer):
+        """Cross-attention out_proj should be near-zero (Normal(0, 1e-4))."""
         model = IntraCrossSmilesModel(
             vocab_size=tokenizer.vocab_size,
             d_model=64, num_heads=4, patch_size=64,
         )
-        # Default is True: cross-attention out_proj should be zero-init
-        # Check first cross block's cross_attn
         for cross_blocks in [model.ir_cross, model.h1_cross, model.c13_cross]:
             for block in cross_blocks:
-                assert torch.allclose(
-                    block.cross_attn.out_proj.weight,
-                    torch.zeros_like(block.cross_attn.out_proj.weight),
-                )
+                w = block.cross_attn.out_proj.weight
+                # Mean should be close to 0, std should be close to 1e-4
+                assert abs(w.mean().item()) < 0.001, f"mean {w.mean().item()} too large"
+                assert 1e-5 < w.std().item() < 1e-2, f"std {w.std().item()} unexpected"
 
-    def test_can_disable_zero_init(self, tokenizer):
+    def test_cross_attn_gate_init(self, tokenizer):
+        """Cross-attention gate should be initialized to sigmoid(-4) ≈ 0.018."""
         model = IntraCrossSmilesModel(
             vocab_size=tokenizer.vocab_size,
             d_model=64, num_heads=4, patch_size=64,
-            zero_init_cross_out_proj=False,
         )
         block = model.ir_cross[0]
-        assert not torch.allclose(
-            block.cross_attn.out_proj.weight,
-            torch.zeros_like(block.cross_attn.out_proj.weight),
+        assert torch.allclose(
+            block.gate_logit,
+            torch.tensor(-4.0),
         )
+        alpha = torch.sigmoid(block.gate_logit)
+        assert 0.015 < alpha.item() < 0.02, f"alpha={alpha.item()} not near 0.018"
 
     def test_count_params(self, tokenizer):
         model = IntraCrossSmilesModel(

@@ -95,7 +95,8 @@ echo "Start: $(date)"
 echo "============================================"
 
 module load miniforge3/24.11
-source activate transpec
+eval "$(conda shell.bash hook)"
+conda activate transpec
 
 cd /data/home/sczc698/run/xxy/Trans-cross/code/
 
