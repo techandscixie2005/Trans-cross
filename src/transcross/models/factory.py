@@ -65,9 +65,10 @@ def build_smiles_model(
 
     elif model_name in ("intra_cross_equal", "intra_cross"):
         e1 = config.get("e1_intra_cross", {})
-        intra_layers = e1.get("intra_layers", 1)
-        cross_layers = e1.get("cross_layers", 1)
+        intra_layers = e1.get("intra_layers", 0)
+        cross_layers = e1.get("cross_layers", 0)
         fusion_layers = e1.get("fusion_layers", 0)
+        intra_cross_blocks = e1.get("intra_cross_blocks", 0)
         encoder_ffn_dim = e1.get("encoder_ffn_dim", 512)
         cross_gate_init = e1.get("cross_gate_init", -4.0)
         return IntraCrossSmilesModel(
@@ -78,6 +79,7 @@ def build_smiles_model(
             encoder_layers=intra_layers,
             cross_layers=cross_layers,
             fusion_layers=fusion_layers,
+            intra_cross_blocks=intra_cross_blocks,
             encoder_ffn_dim=encoder_ffn_dim,
             decoder_layers=decoder_layers,
             decoder_ffn_dim=decoder_ffn_dim,

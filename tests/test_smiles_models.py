@@ -122,13 +122,9 @@ class TestIntraCrossSmilesModel:
         model = IntraCrossSmilesModel(
             vocab_size=tokenizer.vocab_size,
             d_model=64, num_heads=4, patch_size=64,
+            encoder_layers=1, cross_layers=1,
         )
-        block = model.ir_cross[0]
-        assert torch.allclose(
-            block.gate_logit,
-            torch.tensor(-4.0),
-        )
-        alpha = torch.sigmoid(block.gate_logit)
+        alpha = model.ir_cross[0].get_alpha()
         assert 0.015 < alpha.item() < 0.02, f"alpha={alpha.item()} not near 0.018"
 
     def test_count_params(self, tokenizer):
